@@ -9,9 +9,7 @@
 404 page not found
 <pre>
 <?php 
-$session = new Session();
 print_r($_SESSION);
-$session->EndSession();
 ?>
 </pre>
 </body>

@@ -4,7 +4,7 @@ class Router
 {
 	static $obj;
 	public $params;
-	private $URL;
+	private $url;
 	private $use;
 	private $notFound = FALSE;
 
@@ -38,6 +38,7 @@ class Router
 			header("HTTP/1.0 404 Not Found");
 	}
 
+	// Add pages here
 	public function File()
 	{
 		$URLArray = $this->GetURLParts();
@@ -67,18 +68,34 @@ class Router
 		{
 			switch($URLArray[1])
 			{
+				case "":
+					$this->params = "manager";
+					$file = "/templetes/homepage.php";
+					break;
+				case "account":
+					$this->params = "manager";
+					$file = "/templetes/accountedit.php";
+					break;
 				default:
-				$this->notFound = TRUE;
-				$file = "/templetes/404.php";
+					$this->notFound = TRUE;
+					$file = "/templetes/404.php";
 			}
 		}
 		else
 		{
 			switch($URLArray[1])
 			{
+				case "":
+					$this->params = "user";
+					$file = "/templetes/homepage.php";
+					break;
+				case "account":
+					$this->params = "user";
+					$file = "/templetes/accountedit.php";
+					break;
 				default:
-				$this->notFound = TRUE;
-				$file = "/templetes/404.php";
+					$this->notFound = TRUE;
+					$file = "/templetes/404.php";
 			}
 		}
 		

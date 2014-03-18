@@ -32,6 +32,29 @@
 		{
 			return $this->NewSession($userName,$password,"User");
 		}
+		
+		public function UpdateUser($id,$name,$email,$phoneNumber,$oldPassword,$newPassword)
+		{
+			return $this->UpdatePerson($id,$name,$email,$oldPassword,$newPassword,$phoneNumber);
+		}
+		
+		public function UpdateManager($id,$name,$email,$oldPassword,$newPassword)
+		{
+			return $this->UpdatePerson($id,$name,$email,$oldPassword,$newPassword,NULL,'Manager');
+		}
+		
+		private function UpdatePerson($id,$name,$email,$oldPassword,$newPassword,$phoneNumber,$managerOrUser = 'User')
+		{
+			if (!People::UpdatePerson($id,$name,$email,$oldPassword,$newPassword,$phoneNumber,$managerOrUser))
+				return FALSE;
+			
+			if ($managerOrUser == "User") $_SESSION['phoneNumber'] = $id;
+			$_SESSION['name'] = $name;
+			$_SESSION['email'] = $email;
+			
+			return TRUE;
+	
+		}
 	
 		private function NewSession($userName,$password,$managerOrUser)
 		{

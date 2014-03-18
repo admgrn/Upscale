@@ -25,6 +25,42 @@
 			else
 				return FALSE;
 		}
+		
+		static function UpdatePerson($id,&$name,&$email,&$oldPassword,&$newPassword,&$phoneNumber,$managerOrUser = "User")
+		{
+			$error = Errors::Create("edit");
+			
+			if ($managerOrUser == "Manager")
+			{
+			
+			}
+			else
+			{
+				$mysqli = openDB();
+				$stmt = $mysqli->prepare("UPDATE users SET name=?,email=?,phone_number=? WHERE id=?");
+				$stmt->bind_param("sssi",$name,$email,$phoneNumber,$id);
+				
+				if($stmt->execute())
+				{		
+					$stmt->close();
+					return TRUE;
+				}
+				else
+				{
+					if ($stmt->errno == 1062)
+					{
+						// email already registered
+						$error->SetError("emailDuplicate");
+					}
+					else
+					{
+						// General error
+					}
+				}
+				
+				return FALSE;
+			}
+		}
 
 		static function LoadPerson($userName,$password,$managerOrUser = "User")
 		{

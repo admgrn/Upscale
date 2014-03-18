@@ -29,6 +29,23 @@
 			die();
 		}
 	}
+	
+	// Logout User
+	if (isset($_POST['logout']))
+	{		
+		if ($_SESSION['login'] == 'Manager')
+		{
+			$session->EndSession();
+			header("Location: " . ROOT_URL . "/managers");
+		}
+		else
+		{
+			$session->EndSession();
+			header("Location: " . ROOT_URL);
+		}
+			
+		die();
+	}
 		
 	
 	// Check if user is logged in

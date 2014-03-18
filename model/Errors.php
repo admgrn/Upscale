@@ -31,10 +31,24 @@
 		// Returns true of false if value exists and echos string if passed
 		public function GetError($value,$string = NULL)
 		{
-			if(array_key_exists($value,$this->errors))
+			if (is_array($value))
 			{
-				if ($string != NULL) echo $string;
-				return TRUE;
+				foreach ($value as $item)
+				{
+					if(array_key_exists($item,$this->errors))
+					{
+						if ($string != NULL) echo $string;
+						return TRUE;
+					}
+				}
+			}
+			else
+			{
+				if(array_key_exists($value,$this->errors))
+				{
+					if ($string != NULL) echo $string;
+					return TRUE;
+				}
 			}
 			
 			return FALSE;
