@@ -36,11 +36,14 @@
 					if ($errors->GetState()) echo "<ul class='loginErrorList'>";
 					$errors->GetError("general","\t<li>An Error Occured, please try again</li>");
 					$errors->GetError("username","\t<li>Username Already Exists</li>");
-					$errors->GetError("email","\t<li>Email Already Exists</li>");
 					$errors->GetError("nameNull","\t<li>Name cannot be empty</li>");
 					$errors->GetError("userNameNull","\t<li>Username cannot be empty</li>");
 					$errors->GetError("passwordNull","\t<li>Password cannot be empty</li>");
+					$errors->GetError("passwordLen","\t<li>New Password must be at least 6 characters</li>");
 					$errors->GetError("emailNull","\t<li>Email cannot be empty</li>");
+					$errors->GetError("email","\t<li>Email Already Exists</li>");
+					$errors->GetError("emailFormat","\t<li>Invalid Email address</li>");
+					$errors->GetError("phoneFormat","\t<li>Invalid Phone Format</li>");
 					$errors->GetError("phoneNumberNull","\t<li>Phone Number cannot be empty</li>");
 					if ($errors->GetState()) echo "</ul>";
 				?>
@@ -48,13 +51,13 @@
                 <form id='loginForm' method='post' action='<?php echo THIS_PAGE;?>'>
                 	<input type='text' placeholder='name' class='inputField<?php $errors->GetError("nameNull"," borderError");?>' name='loginName' <?php echo $form->GetValue('loginName');?> />
 					<input type='text' placeholder='username' class='inputField<?php $errors->GetError("userNameNull"," borderError");?>' name='loginUsername' <?php echo $form->GetValue('loginUsername');?> />
-                    <input type='password' placeholder='password' class='inputField<?php $errors->GetError("passwordNull"," borderError");?>' name='loginPassword' <?php echo $form->GetValue('loginPassword');?> />
-                    <input type='text' placeholder='email' class='inputField<?php $errors->GetError("emailNull"," borderError");?>' name='loginEmail' <?php echo $form->GetValue('loginEmail');?> />
+                    <input type='password' placeholder='password' class='inputField<?php $errors->GetError(array("passwordLen","passwordNull")," borderError");?>' name='loginPassword' <?php echo $form->GetValue('loginPassword');?> />
+                    <input type='text' placeholder='email' class='inputField<?php $errors->GetError(array("emailNull","emailFormat")," borderError");?>' name='loginEmail' <?php echo $form->GetValue('loginEmail');?> />
                     <?php
 						if ($page == "user")
 						{
 							echo " <input type='text' placeholder='phone number' class='inputField";
-							$errors->GetError("phoneNumberNull"," borderError");
+							$errors->GetError(array("phoneFormat","phoneNumberNull")," borderError");
 							echo "' name='loginPhoneNumber' " . $form->GetValue('loginPhoneNumber') . " />";
 							echo "<a href='" . ROOT_URL . "' class='mainButton' value='back' style='white-space:nowrap'>< back</a>"; 
 							echo "<input type='hidden' name='createUse' value='user' />";

@@ -17,7 +17,7 @@
                 </div>
                 <div id='headerMainRight'>
                 	<div id='headerMainRightTop'>
-                    	<?php echo $_SESSION['name'];?> | <a href='<?php echo ROOT_URL;?>/account' title='edit account'>edit account</a> | <a href='javascript:void(0)' title='logout' id='logout'>logout</a>
+                    	<?php echo "<a href='".ROOT_URL."' title='home'>{$_SESSION['name']}</a>";?> | <a href='<?php echo ROOT_URL;?>/account' title='edit account'>edit account</a> | <a href='javascript:void(0)' title='logout' id='logout'>logout</a>
                         <form action='<?php echo ROOT_URL?>' method='post' id='logoutForm'>
                         	<input type='hidden' name='logout' value='true' />
                         </form>

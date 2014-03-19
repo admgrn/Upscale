@@ -48,7 +48,7 @@
 			if (!People::UpdatePerson($id,$name,$email,$oldPassword,$newPassword,$phoneNumber,$managerOrUser))
 				return FALSE;
 			
-			if ($managerOrUser == "User") $_SESSION['phoneNumber'] = $id;
+			if ($managerOrUser == "User") $_SESSION['phoneNumber'] = $phoneNumber;
 			$_SESSION['name'] = $name;
 			$_SESSION['email'] = $email;
 			
