@@ -76,6 +76,10 @@ class Router
 					$this->params = "manager";
 					$file = "/templetes/accountedit.php";
 					break;
+				case "managerestaurants":
+					$this->params = "manager";
+					$file = "/templetes/managerestaurants.php";
+					break;
 				default:
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";
