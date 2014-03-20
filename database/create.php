@@ -37,28 +37,55 @@ CREATE TABLE managers (
 CREATE TABLE reservations (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	restaurant_id INT,
-	FOREIGN KEY (restaurant_id)
+	FOREIGN KEY (restaurant_id),
 		REFERENCES restaurants(id)
 		ON DELETE CASCADE
 	date DATE,
-	start_time TIME
-	number_of people INT,
+	start_time TIME,
+	number_of people INT
 	);
 	
 CREATE TABLE tables (
-	
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	FOREIGN KEY (restaurant_id),
+		REFERENCES restaurants(id)
+		ON DELETE CASCADE
+	capacity INT,
+	can_combine BOOL,
+	description VARCHAR(200),
+	reserve_online BOOL
 	);
 
 CREATE TABLE hours (
-	
+	day_of_week INT NOT NULL,
+	FOREIGN KEY (restaurant_id) NOT NULL,
+		REFERENCES restaurants(id)
+		ON DELETE CASCADE
+	open TIME,
+	close TIME,
+	all_day BOOL,
+	PRIMARY KEY (day_of_week, restaurant_id)
 	);
 
 CREATE TABLE special_hours (
-	
+	date DATE NOT NULL,
+	FOREIGN KEY (restaurant_id) NOT NULL,
+		REFERENCES restaurants(id)
+		ON DELETE CASCADE
+	open TIME,
+	close TIME,
+	all_day BOOL,
+	PRIMARY KEY (date, restaurant_id)	
 	);
 	
 CREATE TABLE tables_in_reservation (
-	
+	reservation_id INT NOT NULL,
+		REFERENCES resevations(id)
+		ON DELETE  CASCADE
+	table_id,
+		REFERENCES tables(id)
+		ON DELETE CASCADE
+	PRIMARY KEY (reservation_id, table_id)
 	);
 	
 EOD;
