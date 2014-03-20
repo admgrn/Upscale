@@ -69,5 +69,15 @@
 				// No restaurants found
 				return FALSE;
 		}
+		
+		public static function DeleteRestaurants($rid,$uid)
+		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("DELETE FROM restaurants WHERE manager_id=? AND id=?");
+			$stmt->bind_param($uid,$rid);
+			
+			$stmt->execute();			
+		}
 	}
 ?>

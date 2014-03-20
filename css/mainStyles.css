@@ -278,3 +278,7 @@ h3.loginError {
 	font-size:13px;
 	font-weight:bold;
 }
+
+.center {
+	text-align:center;	
+}
