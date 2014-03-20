@@ -16,28 +16,49 @@
 	
 ?>  
         <div id='mainContentsLogin'>
+        	<a href='<?php echo ROOT_URL;?>/newRestaurant' class='mainButton' title='+ new restaurant'>+ new restaurant</a>
         	<div class='center'>
 				<?php
                     if ($restaurants)
                     {
-                    	if (array_key_exists("active",$restaurants))
+                    	if (count($restaurants['active']))
 						{
 							$i = 1;
-							
-							echo "<table>";
+								
+							echo "<h3 class='tableTitle'>Active Restaurants</h3><table class='tableList'>";
 							echo "\t<tr><th>#</th><th>name</th><th>address</th><th>table count</th><th>actions</th></tr>";
-							
 							foreach($restaurants["active"] as $r)
 							{
-								echo "\t<tr><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td><a href='".ROOT_URL."/editrestaurant/$r->id' title='edit info'>edit info</a><a href='".ROOT_URL."/edittables/$r->id' title='edit tables'>edit tables</a><a href='".ROOT_URL."/reservations/$r->id' title='reservations'>reservations</a><form action='".THIS_PAGE."' method='post'><input type='hidden' name='delete' value='$r->id' /><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this restaurant? This cannot be undone.')) return true; else return false;\" /></form></td></tr>";
+								if (($i & 1) == 1) 
+								$class = "class='rowHighlight'";
+							else
+								$class = "";
+								
+								echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td><a href='".ROOT_URL."/editrestaurant/$r->id' title='edit info' class='mainButtonTable'>edit info</a><a href='".ROOT_URL."/edittables/$r->id' title='edit tables' class='mainButtonTable'>edit tables</a><a href='".ROOT_URL."/reservations/$r->id' title='reservations' class='mainButtonTable'>reservations</a><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='hidden' name='delete' value='$r->id' class='mainButtonTable' /><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this restaurant? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /></form></td></tr>";
 								++$i;
 							}
 							
 							echo "</table>";
 						}
 						
-						if (array_key_exists("nonactive",$restaurants))
+						if (count($restaurants['nonactive']))
 						{
+							$i = 1;
+								
+							echo "<h3 class='tableTitle'>Pending Restaurants</h3><table class='tableList'>";
+							echo "\t<tr><th>#</th><th>name</th><th>address</th><th>table count</th><th>actions</th></tr>";
+							foreach($restaurants["nonactive"] as $r)
+							{
+								if (($i & 1) == 1) 
+								$class = "class='rowHighlight'";
+							else
+								$class = "";
+								
+								echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td><a href='".ROOT_URL."/editrestaurant/$r->id' title='edit info' class='mainButtonTable'>edit info</a><a href='".ROOT_URL."/edittables/$r->id' title='edit tables' class='mainButtonTable'>edit tables</a><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='hidden' name='delete' value='$r->id' class='mainButtonTable' /><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this restaurant? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /></form></td></tr>";
+								++$i;
+							}
+							
+							echo "</table>";
 							
 						}
                         

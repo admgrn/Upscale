@@ -5,62 +5,68 @@
 		public $id;
 		public $name;
 		public $address;
-		public $description;
+		public $phoneNumber;
 		public $longitude;
 		public $latitude;
-		public $maxNoticeDays;
-		public $minNoticeMinutes;
+		public $maxNotice;
+		public $minNotice;
 		public $reservationLength;
 		public $tableCount;
 		public $managerID;
 		public $status;
 		
-		public function __construct($id = NULL,$name = NULL,$address = NULL,$description = NULL,$longitude = NULL,$latitude = NULL,
-								    $maxNoticeDays = NULL,$minNoticeMinutes = NULL,$reservationLength = NULL,$tableCount = NULL,
-									$managerID = NULL,$status = NULL)
+		public function __construct($id = NULL,$name = NULL,$address = NULL,$phoneNumber = NULL,$longitude = NULL,
+							   	    $latitude = NULL,$maxNotice = NULL,$minNotice = NULL,$reservationLength = NULL,
+									$tableCount = NULL,$managerID = NULL,$status = NULL)
 		{
 			$this->id = $id;
 			$this->name = $name;
 			$this->address = $address;
-			$this->description = $description;
+			$this->phoneNumber = $phoneNumber;
 			$this->longitude = $longitude;
 			$this->latitude = $latitude;
-			$this->maxNoticeDays = $maxNoticeDays;
-			$this->minNoticeMinutes = $minNoticeMinutes;
+			$this->maxNotice = $maxNotice;
+			$this->minNotice = $minNotice;
 			$this->reservationLength = $reservationLength;
 			$this->tableCount = $tableCount;
 			$this->managerID = $managerID;	
 			$this->status = $status;			
 		}
 		
+		function __clone()
+		{
+	
+		}
 		
 		public static function GetRestaurantList($id)
 		{
 			$mysqli = openDB();
 			
-			$r = new Restaurant;
-			$restaurants = array();
 			
-			$query = "SELECT r.id,r.name,r.address,r.longitude,r.latitude,r.max_notice_days,r.min_notice_minutes,r.reservation_length,
-					  r.tableCount,COUNT(t.id) AS table_count,r.managerID,r.status FROM restaurants r LEFT JOIN tables t ON 
+			$restaurants = array('active' => array(),'nonactive'=>array());
+			
+			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
+			r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
+					  FROM restaurants r LEFT JOIN tables t ON 
 					  	r.id = t.restaurant_id WHERE r.manager_id=? GROUP BY r.id ORDER BY r.id";
-		
 			if ($stmt = $mysqli->prepare($query))
 			{
 				$stmt->bind_param("i",$id);
-				$stmt->bind_result($r->id,$r->name,$r->address,$r->description,$r->longitude,$r->latitude,$r->maxNoticeDays,
-								   $r->minNoticeMinutes,$r->reservationLength,$r->tableCount,$r->managerID,$r->status);
+				$stmt->bind_result($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+								   $minNotice,$reservationLength,$tableCount,$managerID,$status);
 								
-				if ($stmt->execute() && $stmt->store_result())
-				{
+				if ($stmt->execute() && $stmt->store_result() && $stmt->num_rows)
+				{		   
 					while($stmt->fetch())
 					{
-						$c = clone $r;
-						
-						if ($c->status)
-							array_push($restaurants['active'],$c);
+						$r = new Restaurant($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+								   $minNotice,$reservationLength,$tableCount,$managerID,$status);
+								   
+						if ($r->status)
+							array_push($restaurants['active'],$r);
 						else
-							array_push($restaurants['nonactive'],$c);					
+							array_push($restaurants['nonactive'],$r);	
+										
 					}
 					
 					return $restaurants;
@@ -70,14 +76,15 @@
 				return FALSE;
 		}
 		
-		public static function DeleteRestaurants($rid,$uid)
+		public static function DeleteRestaurant($rid,$uid)
 		{
 			$mysqli = openDB();
 			
 			$stmt = $mysqli->prepare("DELETE FROM restaurants WHERE manager_id=? AND id=?");
-			$stmt->bind_param($uid,$rid);
+			$stmt->bind_param("ii",$uid,$rid);
 			
-			$stmt->execute();			
+			$stmt->execute();	
+			echo $stmt->error;		
 		}
 	}
 ?>

@@ -39,7 +39,7 @@
 					$errors->GetError("nameNull","\t<li>Name cannot be empty</li>");
 					$errors->GetError("userNameNull","\t<li>Username cannot be empty</li>");
 					$errors->GetError("passwordNull","\t<li>Password cannot be empty</li>");
-					$errors->GetError("passwordLen","\t<li>New Password must be at least 6 characters</li>");
+					$errors->GetError("passwordLen","\t<li>Password must be at least 6 characters</li>");
 					$errors->GetError("emailNull","\t<li>Email cannot be empty</li>");
 					$errors->GetError("email","\t<li>Email Already Exists</li>");
 					$errors->GetError("emailFormat","\t<li>Invalid Email address</li>");

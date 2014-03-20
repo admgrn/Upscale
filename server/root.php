@@ -11,7 +11,9 @@
 			include_once($_SERVER['DOCUMENT_ROOT'] . "/database/create.php");
 			
 			$a->multi_query($query);
+			echo $a->error;
 			$a->select_db($db);
+			
 		}
 		
 		return $a;

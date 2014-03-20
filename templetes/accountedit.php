@@ -5,10 +5,16 @@
 	
 	if (isset($_POST['updateUse']))
 	{
-		$form  = new FormValues;
+		
 		$session = new Session;
 		$status = ($page == "user" ? $session->UpdateUser($_SESSION['id'],$_POST['name'],$_POST['email'],$_POST['phoneNumber'],$_POST['oldPassword'],$_POST['newPassword']) :
 						  		     $session->UpdateManager($_SESSION['id'],$_POST['name'],$_POST['email'],$_POST['oldPassword'],$_POST['newPassword']));
+									 
+		if (!$status)
+			$form  = new FormValues;
+		else
+			$form = new FormValues($_SESSION);
+				
 	}
 	else
 	{

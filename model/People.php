@@ -380,6 +380,10 @@
 			else
 			{
 				$phoneNumber = preg_replace('/[^0-9]/',"",$phoneNumber);
+				$phone1 = substr($phoneNumber,0,3);
+				$phone2 = substr($phoneNumber,3,3);
+				$phone3 = substr($phoneNumber,6,4);
+				$phoneNumber = "$phone1-$phone2-$phone3";
 			}
 			
 			return $status;
