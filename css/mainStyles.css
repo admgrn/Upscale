@@ -91,7 +91,7 @@ h3.loginError {
 	margin: 20px auto;
 	padding: 0px;
 	width: 800px;
-	display:block;
+	overflow:hidden;
 	min-height:400px;
 	background-color: #f5f5f5;
 }
@@ -119,6 +119,25 @@ h3.loginError {
 	width: 350px;
 	background-size:200%;
 	background-position:center center;
+}
+
+#restBox {
+	margin: 10px 20px;
+	padding: 0px;
+	width: 300px;
+	background-size:200%;
+	background-position:center center;
+	float:left;
+}
+
+.restEditMap {
+	margin:0px 0px 0px 20px;
+	padding:0px;
+	top:70px;
+	position:relative;
+	width:400px;
+	height:300px;
+	float:left;	
 }
 
 #loginForm {
@@ -219,6 +238,7 @@ h3.loginError {
 .infoBox {
 	padding: 5px;
 	border-top: 5px #e1e1e1 solid;	
+	display:block;
 }
 
 .infoBox h1{
@@ -336,4 +356,14 @@ h3.loginError {
 .tableTitle {
 	margin:50px 0px 10px 0px;
 	padding:0px;
+}
+
+.layerEdit {
+	width:100%;
+	float:left;
+	display:block;	
+}
+
+.mainScheduleBox {
+	font-size:14px;	
 }

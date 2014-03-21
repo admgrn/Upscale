@@ -80,6 +80,23 @@ class Router
 					$this->params = "manager";
 					$file = "/templetes/managerestaurants.php";
 					break;
+				case "newrestaurant":
+					$this->params = "new";
+					$file = "/templetes/restaurantmod.php";
+					break;
+				case "editrestaurant":
+					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					{
+						$this->params = Restaurant::GetRestaurant($_SESSION['id'],$URLArray[2]);
+						if ($this->params)
+						{
+							$file = "/templetes/restaurantmod.php";
+							break;
+						}	
+					}
+					$this->notFound = TRUE;
+					$file = "/templetes/404.php";
+					break;
 				default:
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";

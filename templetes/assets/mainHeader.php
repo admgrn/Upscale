@@ -41,7 +41,6 @@
 							else
 							{
 								echo "<a href='". ROOT_URL . "/managerestaurants' class='mainButtonWhite' title='manage restaurants'>manage restaurants</a>";
-								echo "<a href='" . ROOT_URL . "/reservations' class='mainButtonWhite' title='manage reservations'>manage reservations</a>";
 								echo "<a href='" . ROOT_URL . "/compare' class='mainButtonWhite' title='compare'>compare</a>";
 							}	
 						?>

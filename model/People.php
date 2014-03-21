@@ -97,7 +97,6 @@
 							$error->SetError("incorrectPassword");
 							break;
 						default:
-							echo $stmt->errno;
 							$error->SetError("general");
 					}
 				}

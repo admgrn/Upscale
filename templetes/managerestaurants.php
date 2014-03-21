@@ -16,7 +16,7 @@
 	
 ?>  
         <div id='mainContentsLogin'>
-        	<a href='<?php echo ROOT_URL;?>/newRestaurant' class='mainButton' title='+ new restaurant'>+ new restaurant</a>
+        	<a href='<?php echo ROOT_URL;?>/newrestaurant' style='top:10px;position:relative' class='mainButton' title='+ new restaurant'>+ new restaurant</a>
         	<div class='center'>
 				<?php
                     if ($restaurants)
