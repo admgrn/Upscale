@@ -141,6 +141,7 @@ class Router
 
 	private function GetURLParts()
 	{
-		return explode('/',strtolower($this->url));
+		$URLList = explode('#',strtolower($this->url));
+		return explode('/',$URLList[0]);
 	}
 }

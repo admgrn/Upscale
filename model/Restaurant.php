@@ -119,6 +119,56 @@
 			
 		}
 		
+		public function AddSpecialSchedule($date,$open,$close,$closed,$hasOpen,$hasClose)
+		{
+			$mysqli = openDB();
+			$stmt = $mysqli->prepare("INSERT INTO special_hours(date,restaurant_id,open,close,closed) VALUES(?,?,?,?,?)");
+			$stmt->bind_param("sissi",$date,$this->id,$open,$close,$closed);
+			
+			if ($closed != 1)
+				$closed = 0;
+			else
+				$closed = 1;
+			
+			if ($closed == 0)
+			{
+				
+				if ($hasOpen == 1)
+					$open = NULL;
+					
+				if ($hasClose == 1)
+					$close = NULL;
+				
+			}
+			else
+			{
+				$open = NULL;
+				$close = NULL;	
+			}
+			
+			if($stmt->execute())
+			{
+				return TRUE;
+			}
+			else
+			{
+				$error = Errors::Create("special");
+				
+				switch($stmt->errno)
+				{
+					case 1062:
+						$error->SetError("duplicate");
+						break;
+					default:
+						$error->SetError("general");
+						break;
+				}				
+				
+				return FALSE;
+			}
+		
+		}
+		
 		public function AddTable($name,$capacity,$canCombine,$description,$reserveOnline)
 		{
 			$mysqli = openDB();
@@ -168,6 +218,31 @@
 			return $list;
 		}
 		
+		public function GetSpecialScheduleList($mid)
+		{
+			$mysqli = openDB();
+			
+			$i = 0;
+			$list = array();
+
+			$stmt = $mysqli->prepare("SELECT h.date,h.restaurant_id,h.open,h.close,h.closed FROM special_hours h JOIN restaurants r 
+									  ON h.restaurant_id = r.id WHERE r.manager_id=? AND h.restaurant_id=? ORDER BY h.date ASC");
+			$stmt->bind_param("ii",$mid,$this->id);
+			$stmt->bind_result($date,$id,$open,$close,$closed);
+			
+			$stmt->execute();
+			
+			$i = 0;
+			
+			while($stmt->fetch())
+			{
+				$h = new Hours($id,$date,$open,$close,$closed);
+				$list[$i++] = $h;				
+			}
+			
+			return $list;
+		}
+		
 		public function DeleteTable($id)
 		{
 			$mysqli = openDB();
@@ -176,6 +251,22 @@
 			$stmt->bind_param("i",$id);
 			
 			$stmt->execute();	
+		}
+		
+		public function DeleteSpecialSchedule($date)
+		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("DELETE FROM special_hours WHERE date=? AND restaurant_id=?");
+			$stmt->bind_param("si",$date,$this->id);
+			
+			if(!$stmt->execute() || !$stmt->affected_rows)
+			{
+				Errors::Create("special")->SetError("general");
+				return FALSE;
+			}
+			
+			return FALSE;
 		}
 		
 		public static function GetRestaurantList($id)

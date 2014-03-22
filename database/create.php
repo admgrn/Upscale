@@ -71,7 +71,7 @@ CREATE TABLE hours (
 	restaurant_id INT NOT NULL,
 	open TIME,
 	close TIME,
-	closed BOOL,
+	closed BOOL NOT NULL,
 	PRIMARY KEY (day_of_week, restaurant_id),
 	FOREIGN KEY (restaurant_id)
 		REFERENCES restaurants(id)
