@@ -8,8 +8,11 @@
 	{
 		$status = Restaurant::CreateRestaurant($_SESSION['id'],$_POST['name'],$_POST['address'],$_POST['phoneNumber'],$_POST['maxTime'],
 									  $_POST['minTime'],$_POST['length'],$_POST['long'],$_POST['lat']);
+		
 		if ($status) 
 		{
+			$status->SetMainSchedule($_POST,"open","close","closed","isopen","isclosed");
+			
 			header("Location: " . ROOT_URL . "/managerestaurants");
 			die();
 		}
@@ -21,6 +24,11 @@
 											   $_POST['long'],$_POST['lat']);
 											   
 		$page = Restaurant::GetRestaurant($_SESSION['id'],$page->id);
+		$page->SetMainSchedule($_POST,"open","close","closed","isopen","isclosed");
+	}
+	else
+	{
+		$status = FALSE;
 	}
 	
 	if ($page == "new" || (isset($_POST['newOrUpdate']) && !$status))
@@ -37,6 +45,30 @@
 		$values['length'] = $page->reservationLength;
 		$values['long'] = $page->longitude;
 		$values['lat'] = $page->latitude;
+	
+		$schedule = $page->GetMainScheduleList($_SESSION['id']);
+	
+		for($i=0;$i < 7;++$i)
+		{
+			if ($schedule[$i]->isClosed == 1) 
+			{
+				$values["closed$i"] = 1;
+			}
+			else
+			{
+				if ($schedule[$i]->open == NULL)
+					$values["isopen$i"] = 1;
+				else
+					$values["open$i"] = $schedule[$i]->open;
+					
+				if ($schedule[$i]->close == NULL)
+					$values["isclosed$i"] = 1;
+				else
+					$values["close$i"] = $schedule[$i]->close;
+			}
+		
+		}
+		
 		$form = new FormValues($values);	
 	}
 	
@@ -54,13 +86,14 @@
 ?>  
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_K5EZSK6N2XxNbuaM8SJ8CEwAXFLCfkk&sensor=true"></script>
         <script type="text/javascript">
+		  marker = null;
           function initialize() {
 			geocoder = new google.maps.Geocoder();
             var mapOptions = {
-			<?php if ($page == "new" && $_POST['lat'] == 0 && $_POST['long'] == 0) { ?>
+			<?php if ($page == "new" && ((!isset($_POST['lat']) && !isset($_POST['long'])) || ($_POST['lat'] == 0 && $_POST['long'] == 0 ))) { ?>
               center: new google.maps.LatLng(30.4328071,-84.2879266),
               zoom: 11
-		     <?php } elseif($_POST['lat'] != 0 && $_POST['long'] != 0) {?>
+		     <?php } elseif(isset($_POST['lat']) && isset($_POST['long'])) {?>
 			  center: new google.maps.LatLng(<?php echo "{$_POST['lat']},{$_POST['long']}";?>),
 			  zoom: 15			 
 			 <?php } else {?>
@@ -76,7 +109,7 @@
 				  position: new google.maps.LatLng(<?php echo "$page->latitude,$page->longitude";?>),
 				  map: map
 			  });
-			<?php } elseif($_POST['lat'] != 0 && $_POST['long'] != 0) {?>	
+			<?php } elseif(isset($_POST['lat']) && isset($_POST['long']) && $_POST['lat'] != 0 && $_POST['long'] != 0) {?>	
 			 marker = new google.maps.Marker({
 				  position: new google.maps.LatLng(<?php echo "{$_POST['lat']},{$_POST['long']}";?>),
 				  map: map
@@ -94,7 +127,7 @@
 					 if (status == google.maps.GeocoderStatus.OK) {
 						map.setCenter(results[0].geometry.location);
 						map.setZoom(15);
-						marker.setMap(null);
+						if (marker != null) marker.setMap(null);
 						marker = new google.maps.Marker({
 							map: map,
 							position: results[0].geometry.location,
@@ -167,10 +200,14 @@
                      <?php foreach($days as $index => $day) { ?>
                         <tr>
                             <td><?php echo $day;?></td>
-                            <td><input type='time' placeholder='open' name='open<?php echo $index;?>' /></td>
-                            <td><input type='time' placeholder='close' name='close<?php echo $index;?>' /></td>
-                            <td><label><input type='checkbox' name='allday<?php echo $index;?>' />open all day</label></td>
-                            <td><label><input type='checkbox' name='closed<?php echo $index;?>' />closed</label></td>
+                            <td><input type='time' placeholder='open' name='open<?php echo $index;?>' <?php echo $form->GetValue("open$index");?> /></td>
+                            <td><input type='time' placeholder='close' name='close<?php echo $index;?>' <?php echo $form->GetValue("close$index");?> /></td>
+                            <td><label><input type='checkbox' name='closed<?php echo $index;?>' value='1' <?php echo $form->SendItem("closed$index","checked='checked'");?> />closed</label></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><label>no open time <input type='checkbox' name='isopen<?php echo $index;?>' value='1' <?php echo $form->SendItem("isopen$index","checked='checked'");?> /></label></td>
+                            <td><label>no close time <input type='checkbox' name='isclosed<?php echo $index;?>' value='1' <?php echo $form->SendItem("isclosed$index","checked='checked'");?>/></label></td>
                         </tr>
                      <?php } ?>
                      </table>

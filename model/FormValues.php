@@ -17,6 +17,14 @@ class FormValues
 		}
 	}
 	
+	public function SendItem($item,$send)
+	{
+		if (isset($this->values[$item]))
+		{
+			return $send;	
+		}
+	}
+	
 	public function FormatValue($value)
 	{
 		$value = htmlentities($value,ENT_QUOTES);

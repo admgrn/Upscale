@@ -38,6 +38,87 @@
 	
 		}
 		
+		public function GetMainScheduleList($mid)
+		{
+			$mysqli = openDB();
+			
+			$i = 0;
+			$list = array();
+
+			$stmt = $mysqli->prepare("SELECT h.day_of_week,h.restaurant_id,h.open,h.close,h.closed FROM hours h JOIN restaurants r ON 
+								 	   h.restaurant_id = r.id WHERE r.manager_id=? AND h.day_of_week=? AND h.restaurant_id=?");
+			$stmt->bind_param("iii",$mid,$i,$this->id);
+			$stmt->bind_result($day,$id,$open,$close,$closed);
+			
+			while($i < 7)
+			{
+				$stmt->execute();
+				$stmt->fetch();
+				
+				$h = new Hours($id,$day,$open,$close,$closed);
+				$list[$i++] = $h;				
+			}
+			
+			return $list;
+		}
+		
+		public function SetMainSchedule($a,$openname,$closename,$closedname,$isOpen,$isClosed)
+		{
+			$mysqli = openDB();
+			
+			$i = 0;
+			
+			$stmt = $mysqli->prepare("REPLACE INTO hours(day_of_week,restaurant_id,open,close,closed) VALUES(?,?,?,?,?)");
+			$stmt->bind_param("iissi",$i,$this->id,$open,$close,$closed);
+			
+			while($i < 7)
+			{
+				if (isset($a["$closedname$i"]))
+					$closed = $a["$closedname$i"];
+				else
+					$closed = 0;
+				
+				if ($closed != 1)
+				{
+					$closed = 0;
+					
+					if (isset($a["$isOpen$i"]) && $a["$isOpen$i"] == 1)
+						$open = NULL;
+					else
+						$open = $a["$openname$i"];
+						
+					if (isset($a["$isClosed$i"]) && $a["$isClosed$i"] == 1)
+						$close = NULL;
+					else
+						$close = $a["$closename$i"];
+					
+				}
+				else
+				{
+					$open = NULL;
+					$close = NULL;	
+				}
+				
+				
+				if (!$stmt->execute())
+				{
+					break;	
+				}
+				
+				++$i;	
+			}
+			
+			if ($i != 7)
+			{
+				return FALSE;
+			}
+			else
+			{
+				return TRUE;
+			}
+			
+		}
+		
 		public static function GetRestaurantList($id)
 		{
 			$mysqli = openDB();
@@ -116,8 +197,8 @@
 				
 				if ($stmt->execute())
 				{
-					
-					return TRUE;
+					echo $stmt->insert_id . "hi";
+					return self::GetRestaurant($uid,$stmt->insert_id);
 				}
 				else
 				{
