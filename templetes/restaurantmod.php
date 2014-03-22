@@ -215,5 +215,26 @@
                  </div>
              </div>
           </form>
+          <?php if($page != "new") {?>
+          <div class='layerEdit'>
+              <div class='infoBox mainScheduleBox'>
+                <h3>Special Schedule</h3>
+                <table style='margin: 0px auto;'>
+                   <tr>
+                        <td><input type='date' name='dateSP' /></td>
+                        <td><input type='time' placeholder='open' name='openSP' /></td>
+                        <td><input type='time' placeholder='close' name='closeSP' /></td>
+                        <td><label><input type='checkbox' name='closed' value='1' />closed</label></td>
+                        <td><input type='submit' class='mainButtonTable' value='add' /></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><label>no open time <input type='checkbox' name='isopenSP' value='1' /></label></td>
+                        <td><label>no close time <input type='checkbox' name='isclosedSP' value='1' /></label></td>
+                    </tr>
+                  </table>
+                </div>        
+              </div>      
+       	  <?php }?>
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/mainFooter.php"); ?>

@@ -158,6 +158,13 @@ h3.loginError {
 	height: 20px;
 }
 
+.inputFieldSmall {
+	margin: 0px;
+	padding: 2px;
+	width: 100px;
+	height: 15px;
+}
+
 .mainButton {
 	margin: 5px;
 	padding: 8px 15px 8px 15px;

@@ -97,6 +97,19 @@ class Router
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";
 					break;
+				case "edittables":
+					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					{
+						$this->params = Restaurant::GetRestaurant($_SESSION['id'],$URLArray[2]);
+						if ($this->params)
+						{
+							$file = "/templetes/managetables.php";
+							break;
+						}	
+					}
+					$this->notFound = TRUE;
+					$file = "/templetes/404.php";
+					break;
 				default:
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";

@@ -55,11 +55,12 @@ CREATE TABLE reservations (
 	
 CREATE TABLE tables (
 	id INT PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(200) NOT NULL DEFAULT "No Name",
 	restaurant_id INT NOT NULL,
-	capacity INT NOT NULL,
-	can_combine BOOL,
-	description VARCHAR(200),
-	reserve_online BOOL,
+	capacity INT NOT NULL DEFAULT 2,
+	can_combine BOOL NOT NULL,
+	description VARCHAR(200) NOT NULL DEFAULT "No Name",
+	reserve_online BOOL NOT NULL,
 	FOREIGN KEY (restaurant_id)
 		REFERENCES restaurants(id)
 		ON DELETE CASCADE

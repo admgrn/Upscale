@@ -34,7 +34,7 @@
 							else
 								$class = "";
 								
-								echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td><a href='".ROOT_URL."/editrestaurant/$r->id' title='edit info' class='mainButtonTable'>edit info</a><a href='".ROOT_URL."/edittables/$r->id' title='edit tables' class='mainButtonTable'>edit tables</a><a href='".ROOT_URL."/reservations/$r->id' title='reservations' class='mainButtonTable'>reservations</a><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='hidden' name='delete' value='$r->id' class='mainButtonTable' /><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this restaurant? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /></form></td></tr>";
+								echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td style='width:305px;'><a href='".ROOT_URL."/editrestaurant/$r->id' title='edit info' class='mainButtonTable'>edit info</a><a href='".ROOT_URL."/edittables/$r->id' title='edit tables' class='mainButtonTable'>edit tables</a><a href='".ROOT_URL."/reservations/$r->id' title='reservations' class='mainButtonTable'>reservations</a><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='hidden' name='delete' value='$r->id' class='mainButtonTable' /><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this restaurant? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /></form></td></tr>";
 								++$i;
 							}
 							
@@ -67,7 +67,7 @@
                     {
                         echo "<h3>You are not managing any restaurants</h3>";	
                     }
-                ?>
+                ?>			
             </div>
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/mainFooter.php"); ?>

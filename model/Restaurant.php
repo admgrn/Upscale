@@ -119,10 +119,68 @@
 			
 		}
 		
-		public static function GetRestaurantList($id)
+		public function AddTable($name,$capacity,$canCombine,$description,$reserveOnline)
+		{
+			$mysqli = openDB();
+
+			$stmt = $mysqli->prepare("INSERT INTO tables(name,restaurant_id,capacity,can_combine,description,reserve_online) 
+									   VALUES(?,?,?,?,?,?)");
+									  
+			$stmt->bind_param("siiisi",$name,$this->id,$capacity,$canCombine,$description,$reserveOnline);
+			
+			if (trim($name) == NULL) $name = "No Name";
+			if (trim($capacity) == NULL || !is_numeric(trim($capacity))) $capacity = 2;
+			if (trim($description) == NULL) $description = "No Description";
+			if ($canCombine == NULL) $canCombine = 0;
+			if ($reserveOnline == NULL) $reserveOnline = 0;
+			
+			if ($stmt->execute())
+			{
+				return TRUE;
+			}
+			else
+			{
+				echo $stmt->error;
+				return FALSE;
+			}
+		}
+		
+		public function GetTableList()
+		{
+			$mysqli = openDB();
+			$list = array();
+
+			$stmt = $mysqli->prepare("SELECT id,name,restaurant_id,capacity,can_combine,description,reserve_online FROM tables WHERE
+										restaurant_id=?");
+			$stmt->bind_param("i",$this->id);
+			$stmt->bind_result($id,$name,$rid,$capacity,$canCombine,$description,$reserveOnline);
+			
+			$stmt->execute();
+			$stmt->store_result();
+			
+			$i = 0;
+			
+			while($stmt->fetch())
+			{
+				$list[$i++] = new Table($id,$name,$rid,$capacity,$canCombine,$description,$reserveOnline);
+			}
+			
+			return $list;
+		}
+		
+		public function DeleteTable($id)
 		{
 			$mysqli = openDB();
 			
+			$stmt = $mysqli->prepare("DELETE FROM tables WHERE id=?");
+			$stmt->bind_param("i",$id);
+			
+			$stmt->execute();	
+		}
+		
+		public static function GetRestaurantList($id)
+		{
+			$mysqli = openDB();
 			
 			$restaurants = array('active' => array(),'nonactive'=>array());
 			
@@ -197,7 +255,6 @@
 				
 				if ($stmt->execute())
 				{
-					echo $stmt->insert_id . "hi";
 					return self::GetRestaurant($uid,$stmt->insert_id);
 				}
 				else
