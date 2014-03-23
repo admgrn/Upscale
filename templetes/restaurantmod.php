@@ -58,7 +58,7 @@
 		$values['long'] = $page->longitude;
 		$values['lat'] = $page->latitude;
 	
-		$schedule = $page->GetMainScheduleList($_SESSION['id']);
+		$schedule = $page->GetMainScheduleList();
 	
 		for($i=0;$i < 7;++$i)
 		{
@@ -103,7 +103,7 @@
 			geocoder = new google.maps.Geocoder();
             var mapOptions = {
 			<?php if ($page == "new" && ((!isset($_POST['lat']) && !isset($_POST['long'])) || ($_POST['lat'] == 0 && $_POST['long'] == 0 ))) { ?>
-              center: new google.maps.LatLng(30.4328071,-84.2879266),
+              center: new google.maps.LatLng(<?php echo TALLY_COORD;?>),
               zoom: 11
 		     <?php } elseif(isset($_POST['lat']) && isset($_POST['long'])) {?>
 			  center: new google.maps.LatLng(<?php echo "{$_POST['lat']},{$_POST['long']}";?>),
@@ -212,8 +212,8 @@
                      <?php foreach($days as $index => $day) { ?>
                         <tr>
                             <td><?php echo $day;?></td>
-                            <td><input type='time' placeholder='open' name='open<?php echo $index;?>' <?php echo $form->GetValue("open$index");?> /></td>
-                            <td><input type='time' placeholder='close' name='close<?php echo $index;?>' <?php echo $form->GetValue("close$index");?> /></td>
+                            <td><?php $form->TimeSelection("open$index");?></td>
+                            <td><?php $form->TimeSelection("close$index");?></td>
                             <td><label><input type='checkbox' name='closed<?php echo $index;?>' value='1' <?php echo $form->SendItem("closed$index","checked='checked'");?> />closed</label></td>
                         </tr>
                         <tr>
@@ -233,7 +233,7 @@
                 <h3>Special Schedule</h3>
                 
                		<?php 
-							$list = $page->GetSpecialScheduleList($_SESSION['id']);
+							$list = $page->GetSpecialScheduleList();
 							
 							if (@$statusSP) 
                             {
@@ -320,13 +320,15 @@
 								echo "\t<tr $class><td>$i</td><td>$date</td><td>$open</td><td>$close</td><td>$closed</td><td><form action='".ROOT_URL."/editrestaurant/$page->id#special' method='post'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this table? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='deleteSP' value='$h->day' /></form></td></tr>\n";
 								++$i;
 							}
+							
+							$formSP = new FormValues;
 					   ?>
                        <form method='post' action='<?php echo ROOT_URL."/editrestaurant/$page->id";?>#special'>
                        <tr>
                        		<td><?php echo $i;?></td>
                             <td><input type='date' name='dateSP' id='dateSP' /></td>
-                            <td><input type='time' placeholder='open' name='openSP' /></td>
-                            <td><input type='time' placeholder='close' name='closeSP' /></td>
+                            <td><?php $formSP->TimeSelection("openSP");?></td>
+                            <td><?php $formSP->TimeSelection("closeSP");?></td>
                             <td><label><input type='checkbox' name='closedSP' value='1' />closed</label></td>
                             <td><input type='submit' class='mainButtonTable' value='add' onclick="return CheckDate($('#dateSP').val());" /></td>
                         </tr>

@@ -3,6 +3,8 @@
 	
 	define('THIS_PAGE',ROOT_URL . $_SERVER['REQUEST_URI']);
 	
+	define('TALLY_COORD',"30.4328071,-84.2879266");
+	
 	function openDB($db = "upscale")
 	{
 		$a = new mysqli("localhost","root","root");

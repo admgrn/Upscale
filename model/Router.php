@@ -72,6 +72,10 @@ class Router
 					$this->params = "manager";
 					$file = "/templetes/homepage.php";
 					break;
+				case "reservations":
+					$this->params = "";
+					$file = "/templetes/reservationmanager.php";
+					break;
 				case "account":
 					$this->params = "manager";
 					$file = "/templetes/accountedit.php";
@@ -126,6 +130,14 @@ class Router
 				case "account":
 					$this->params = "user";
 					$file = "/templetes/accountedit.php";
+					break;
+				case "map":
+					$this->params = "user";
+					$file = "/templetes/mainmap.php";
+					break;
+				case "reservations":
+					$this->params = "user";
+					$file = "/templetes/reservations.php";
 					break;
 				default:
 					$this->notFound = TRUE;

@@ -38,7 +38,7 @@
 	
 		}
 		
-		public function GetMainScheduleList($mid)
+		public function GetMainScheduleList()
 		{
 			$mysqli = openDB();
 			
@@ -46,8 +46,8 @@
 			$list = array();
 
 			$stmt = $mysqli->prepare("SELECT h.day_of_week,h.restaurant_id,h.open,h.close,h.closed FROM hours h JOIN restaurants r ON 
-								 	   h.restaurant_id = r.id WHERE r.manager_id=? AND h.day_of_week=? AND h.restaurant_id=?");
-			$stmt->bind_param("iii",$mid,$i,$this->id);
+								 	   h.restaurant_id = r.id WHERE h.day_of_week=? AND h.restaurant_id=?");
+			$stmt->bind_param("ii",$i,$this->id);
 			$stmt->bind_result($day,$id,$open,$close,$closed);
 			
 			while($i < 7)
@@ -218,7 +218,7 @@
 			return $list;
 		}
 		
-		public function GetSpecialScheduleList($mid)
+		public function GetSpecialScheduleList()
 		{
 			$mysqli = openDB();
 			
@@ -226,8 +226,8 @@
 			$list = array();
 
 			$stmt = $mysqli->prepare("SELECT h.date,h.restaurant_id,h.open,h.close,h.closed FROM special_hours h JOIN restaurants r 
-									  ON h.restaurant_id = r.id WHERE r.manager_id=? AND h.restaurant_id=? ORDER BY h.date ASC");
-			$stmt->bind_param("ii",$mid,$this->id);
+									  ON h.restaurant_id = r.id WHERE h.restaurant_id=? ORDER BY h.date ASC");
+			$stmt->bind_param("i",$this->id);
 			$stmt->bind_result($date,$id,$open,$close,$closed);
 			
 			$stmt->execute();
@@ -297,6 +297,38 @@
 						else
 							array_push($restaurants['nonactive'],$r);	
 										
+					}
+					
+					return $restaurants;
+				}
+			}
+				// No restaurants found
+				return FALSE;
+		}
+		
+		public static function GetAllRestaurants()
+		{
+			$mysqli = openDB();
+			
+			$restaurants = array();
+			
+			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
+						r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
+					  FROM restaurants r LEFT JOIN tables t ON 
+					  	r.id = t.restaurant_id WHERE r.status=1 GROUP BY r.id ORDER BY r.id";
+			if ($stmt = $mysqli->prepare($query))
+			{
+				$stmt->bind_result($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+								   $minNotice,$reservationLength,$tableCount,$managerID,$status);
+								
+				if ($stmt->execute() && $stmt->store_result() && $stmt->num_rows)
+				{	
+					$i = 0;
+						   
+					while($stmt->fetch())
+					{
+						$restaurants[$i++] = new Restaurant($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+								   $minNotice,$reservationLength,$tableCount,$managerID,$status);
 					}
 					
 					return $restaurants;
