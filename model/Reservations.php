@@ -37,6 +37,8 @@
 			$dayOfWeek = date("N",strtotime($date)) - 1;							// Index of day of week 
 			$endDate = date("Y-m-d",strtotime(ceil($r->reservationLength)." minutes",strtotime($date)));
 			$endTime = date("G:i:s",strtotime(ceil($r->reservationLength)." minutes",strtotime($time)));
+			$reservationLengthSec = $r->reservationLength * 60;
+			$reservationTimeUnix = strtotime($date . " " . $time);
 			
 			if ($currTime < $maxNoticeTime || $currTime > $minNoticeTime || $reservationTime < $currTime)
 			{
@@ -86,6 +88,7 @@
 					{
 						$nList[$i++] = new Node($d->open,$d->day,'o');
 					}
+					
 					if ($d->close != NULL && $d->open != NULL)
 					{
 						if ($d->open > $d->close)
@@ -95,9 +98,9 @@
 					}
 					elseif($d->close != NULL && $d->open == NULL)
 					{
-						if ($d->close < $day[($j + 1) % 7]->open)	
-							$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
-						else
+					//	if ($d->close < $day[($j + 1) % 7]->open)	
+					//		$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
+					//	else
 							$nList[$i++] = new Node($d->close,$d->day,'c');	
 					}
 				}
@@ -169,16 +172,133 @@
 				
 			// Return tables available in that time 
 						
-			$query = "SELECT t.id,t.name,t.capacity,t.can_combine,t.description,t.reserve_online FROM reservations r 	
-					JOIN tables_in_reservation tr ON r.id = tr.reservation_id 
-					JOIN tables t ON tr.table_id = t.id 
-				  WHERE reserve_online=1 
-				  	AND (((UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) + ?) < ?) OR ((? + ?) <
-						UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time))))";
+			$query = "SELECT ta.id,ta.name,ta.capacity,ta.can_combine,ta.description,ta.reserve_online,ta.restaurant_id 
+						FROM tables ta WHERE ta.id 
+							NOT IN (SELECT t.id FROM reservations r 	
+								JOIN tables_in_reservation tr ON r.id = tr.reservation_id 
+								JOIN tables t ON tr.table_id = t.id 
+				 			   WHERE reserve_online=1 
+				  				AND (((UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) + ?) >= ?) AND ((? + ?) >=
+									UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time))))) 
+					AND ta.restaurant_id=?
+				 	 ORDER BY ta.capacity DESC";
 				 	
-				  // ? = length in seconds, reservation_time in unix , reservation_time , length in seconds , 
+			$mysqli = openDB();
 			
-				  
+			$stmt = $mysqli->prepare($query);
+			
+			$stmt->bind_param("iiiii",$reservationLengthSec,$reservationTimeUnix,$reservationTimeUnix,$reservationLengthSec,$r->id);
+			
+			$stmt->bind_result($id,$name,$capacity,$canCombine,$description,$reserveOnline,$rid);
+			
+			$stmt->execute();
+			
+			$i = 0; $tList = array();
+
+			while($stmt->fetch())
+			{
+				$tList[$i++] = new Table($id,$name,$rid,$capacity,$canCombine,$description,$reserveOnline);
+			}
+			
+		  
+			
+			$theNum = $numberOfPeople;
+			$maxDifference = 3;
+			
+			$found = array();
+			
+			while($numberOfPeople < $theNum + $maxDifference)
+			{
+				foreach($tList as $l)
+				{
+					if($l->capacity == $numberOfPeople)
+					{
+						array_push($found,$l);
+						break;
+					}
+				}	
+				
+				if ($found == array())
+				{
+					self::Find_Combinations($tList,$numberOfPeople,$found);
+					
+					if($found != array())
+					{
+						break;
+					}
+					else
+					{
+						++$numberOfPeople;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+				echo "<pre>";
+				print_r($found);
+				echo "</pre>";
+		}
+		
+		private static function Find_Combinations($numbers,$target,&$item = array(),$partial = array())
+		{
+			if (count($item) > 0)
+				return;
+				
+			$s = 0;
+			$f = 0;
+			if ($partial != array())
+			{
+				foreach($partial as $p)
+				{
+					if ($p->canCombine == 1)
+					{
+						if ($f != 0)
+						{
+							switch($p->capacity)
+							{
+								case 0: case 1: case 2: case 3:
+									$s += $p->capacity;
+									break;
+								default:
+									$s = $s + $p->capacity - 2;
+									break;
+							}
+							++$f;
+						}
+						else
+						{
+							$s += $p->capacity;
+							++$f;
+						}
+					
+					}
+				}
+			}
+			
+			if ($s == $target)
+			{
+				foreach($partial as $p)
+				{
+					if ($p->canCombine == 1)
+						array_push($item,$p);
+				}
+			}
+			if ($s >= $target)
+				return;
+				
+			$c = count($numbers);
+			
+			for($i = 0; $i < $c; ++$i)
+			{
+				$n = $numbers[$i];
+				$remaining = array_slice($numbers,$i+1); 
+				array_push($partial,$n);
+				self::Find_Combinations($remaining,$target,$item,$partial);
+			}
+  
+				
 		}
 	}
 ?>

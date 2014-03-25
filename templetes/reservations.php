@@ -9,7 +9,7 @@
 		echo $r[0]->name;
 		if (isset($_POST['time']))
 		{
-			Reservations::SearchReservation($r[0],$_POST['date'],$_POST['time'],4);
+			Reservations::SearchReservation($r[0],$_POST['date'],$_POST['time'],$_POST['people']);
 		}
 	
 	//
@@ -18,8 +18,9 @@
         <div id='mainContentsLogin'>
         
         <form action='<?php echo THIS_PAGE;?>' method='post'>
-        	<input type='text' name='date' id='date' />
+        	<input type='text' name='date' id='date' <?php echo $form->GetValue('date');?> />
         	<?php $form->TimeSelection("time"); ?>
+            <input type='text' name='people' <?php echo $form->GetValue('people');?> />
             <input type='submit' />
         </form>
                     <script>
