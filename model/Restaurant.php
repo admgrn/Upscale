@@ -218,6 +218,24 @@
 			return $list;
 		}
 		
+		public function GetSpecialSchedule($date)
+		{
+			$mysqli = openDB();
+
+			$stmt = $mysqli->prepare("SELECT h.date,h.restaurant_id,h.open,h.close,h.closed FROM special_hours h JOIN restaurants r 
+									  ON h.restaurant_id = r.id WHERE h.restaurant_id=? AND h.date=?");
+			
+			$stmt->bind_param("is",$this->id,$date);
+			$stmt->bind_result($date,$id,$open,$close,$closed);
+			
+			if($stmt->execute() && $stmt->fetch())
+			{
+				return new Hours($id,$date,$open,$close,$closed);	
+			}
+			
+			return FALSE;
+		}
+		
 		public function GetSpecialScheduleList()
 		{
 			$mysqli = openDB();

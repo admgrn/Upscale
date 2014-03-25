@@ -6,7 +6,8 @@
 		public $userID;
 		public $date;
 		public $startTime;
-		public $numberOfPeople;		
+		public $numberOfPeople;	
+		
 		
 		public function __constructor($id = NULL,$restaurantID = NULL,$userID = NULL,$date = NULL,$startTime = NULL,
 									  $numberOfPeople = NULL)
@@ -34,6 +35,8 @@
 			$maxNoticeTime = $reservationTime - ceil($r->maxNotice * 60);			// Time Stamp of earliest time for resrvation
 			$minNoticeTime = $reservationTime - ceil($r->minNotice * 60);			// Time Stamp of lastest time for reservation
 			$dayOfWeek = date("N",strtotime($date)) - 1;							// Index of day of week 
+			$endDate = date("Y-m-d",strtotime(ceil($r->reservationLength)." minutes",strtotime($date)));
+			$endTime = date("G:i:s",strtotime(ceil($r->reservationLength)." minutes",strtotime($time)));
 			
 			if ($currTime < $maxNoticeTime || $currTime > $minNoticeTime || $reservationTime < $currTime)
 			{
@@ -42,89 +45,126 @@
 			}
 			
 			// Check if time is in bounds of hours
-			$hour = false;
+			$hour = $r->GetMainScheduleList();
 			
-			$SPList = $r->GetSpecialScheduleList();
+			$day[0] = $hour[($dayOfWeek + 5) % 7];
+			$day[1] = $hour[($dayOfWeek + 6) % 7];
+			$day[2] = $hour[$dayOfWeek];
+			$day[3] = $hour[($dayOfWeek + 1) % 7];
+			$day[4] = $hour[($dayOfWeek + 2) % 7];
 			
-			$i = 0;
-			foreach($SPList as $SP)
+			$j = 0;
+			
+			// Assemble special schedule into array
+			for($i = -2; $i < 3; ++$i,$temp = FALSE,++$j)
 			{
-				++$i;
+				$newDate = date('Y-m-d', strtotime("$i day", strtotime($date)));
 				
-				if($SP->day == $date)
+				if ($temp = $r->GetSpecialSchedule($newDate))
 				{
-					$hour = $SP;
-					break;
-				}
-			}	
-			
-			if($hour)
-			{
-				if (!$hour->isClosed)
-				{
-					// Restaurant is open
-					
-					if ($hour->open != NULL)
-					{
-						// Restaurant is not open from the previous night - check opening time against reservation request
-						if ($time < $hour->open)
-						{
-							// Restaurant does not open in time
-							return FALSE;	
-						}
-					}
-					
-					if ($hour->close == NULL)
-					{
-						// Restaurant does not have closing hours
-						$nextDay = $SPList[$i];	
-					}
-					else
-					{
-						// Restaurant has closing hours
-					}
+					$day[$j] = $temp;
 				}
 				else
 				{
-					// Restaurant is closed
-					return FALSE;	
+					$day[$j]->day = $newDate;	
 				}
 			}
-			else
+			echo "<pre>";
+			print_r($day);
+			echo "</pre>";
+
+			$nList = array();
+			
+			// Build list
+			$i = 0;
+			$j = 0;
+			foreach ($day as $d)
 			{
-				// Choose from day of the week	
-				$ml = $r->GetMainScheduleList();
-				$d = $ml[$dayOfWeek];
-				
-				// Check if closed
-				if(!$d->isClosed)
+				if (!$d->isClosed)
 				{
 					if ($d->open != NULL)
 					{
-						// Restaurant is not open from the previous night - check opening time against reservation request
-						if ($time < $d->open)
-						{
-							// Restaurant does not open in time
-							return FALSE;	
-						}
+						$nList[$i++] = new Node($d->open,$d->day,'o');
 					}
-					
-					if ($d->close == NULL)
+					if ($d->close != NULL && $d->open != NULL)
 					{
-						// Restaurant does not have closing hours	
+						if ($d->open > $d->close)
+							$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
+						else
+							$nList[$i++] = new Node($d->close,$d->day,'c');
 					}
-					else
+					elseif($d->close != NULL && $d->open == NULL)
 					{
-						// Restaurant has closing hours
+						if ($d->close < $day[($j + 1) % 7]->open)	
+							$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
+						else
+							$nList[$i++] = new Node($d->close,$d->day,'c');	
 					}
-										
 				}
 				else
 				{
-					// Restaurant is closed
-					return FALSE;	
+					$nList[$i++] = new Node($d->close,$d->day,'-',TRUE);		
 				}
+				++$j;
+			}
+			
+			echo "<pre>";
+			print_r($nList);
+			echo "</pre>";
+			
+			$nCount = count($nList);
+			$location = NULL;
+			
+			for($i = 0; $i < $nCount; ++$i)
+			{
+				
+				$dateTime = strtotime("{$nList[$i]->date} {$nList[$i]->time}");
+				$endDateTime = strtotime("$endDate $endTime");
+				$startDateTime = strtotime("$date $time");
+				
+				if ( ($nList[$i]->type =='o' && $dateTime <= $startDateTime) ||
+					 ($nList[$i]->type == 'c' && $dateTime >= $endDateTime) )
+				{
+					if (array_key_exists($i+1,$nList) && ($nList[$i]->type =='o'))
+					{	
+						$dateTime = strtotime($nList[$i+1]->date . " " . $nList[$i+1]->time);
 						
+						if ($nList[$i+1]->type =='c' && $dateTime >= $endDateTime)
+						{
+							$location = $i;
+							break;
+						}
+						else
+						{
+							$location = NULL;	
+						}
+					}
+					elseif (array_key_exists($i-1,$nList) && ($nList[$i]->type =='c'))
+					{
+						$dateTime = strtotime("{$nList[$i-1]->date} {$nList[$i-1]->time}");
+						
+						if ($nList[$i-1]->type =='o' && $dateTime <= $startDateTime)
+						{
+							$location = $i;
+							break;
+						}
+						else
+						{
+							$location = NULL;	
+						}
+					}
+					else					
+					{
+						$location  = $i;
+					}
+				} 	
+			}
+			
+			if ($location === NULL && $nCount != 0)
+			{
+				// Out of bounds in time
+				echo "out of bounds";
+				return FALSE;
 			}
 			
 		
