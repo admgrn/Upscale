@@ -6,10 +6,10 @@
 	
 	//
 		$r = Restaurant::GetAllRestaurants();
-		echo $r[0]->name;
+		
 		if (isset($_POST['time']))
 		{
-			Reservations::SearchReservation($r[0],$_POST['date'],$_POST['time'],$_POST['people']);
+			Reservations::MakeReservation($r[0],$_SESSION['id'],$_POST['date'],$_POST['time'],$_POST['people']);
 		}
 	
 	//

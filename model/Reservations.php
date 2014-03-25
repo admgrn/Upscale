@@ -7,170 +7,115 @@
 		public $date;
 		public $startTime;
 		public $numberOfPeople;	
+		public $tables;
+		public $tableCount;
 		
 		
 		public function __constructor($id = NULL,$restaurantID = NULL,$userID = NULL,$date = NULL,$startTime = NULL,
-									  $numberOfPeople = NULL)
+									  $numberOfPeople = NULL,$tables = NULL,$tableCount)
 		{
 			$this->id = $id;
 			$this->restaurantID = $restaurantID;
 			$this->userID = $userID;
 			$this->date = $date;
 			$this->startTime = $startTime;
-			$this->numberOfPeople = $numberOfPeople;			
+			$this->numberOfPeople = $numberOfPeople;
+			$this->tables = $tables;
+			$this->tableCount;
 		}
 		
-		public static function AddReservation($rid,$userID,$date,$startTime,$numberOfPeople)
-		{
-				
+		public static function MakeReservation(Restaurant $r,$uid,$date,$time,$numberOfPeople)
+		{			
+			$foundTables = self::SearchReservation($r,$uid,$date,$time,$numberOfPeople);
 			
-		}
-		
-		public static function SearchReservation(Restaurant $r,$date,$time,$numberOfPeople)
-		{		
-			// Check if time is in window
-			date_default_timezone_set('America/New_York');
-			$reservationTime = floor(strtotime("$date $time") / 60);				// Time Stamp of reservation
-			$currTime = floor(time() / 60);											// Current Time Stamp Number of minutes
-			$maxNoticeTime = $reservationTime - ceil($r->maxNotice * 60);			// Time Stamp of earliest time for resrvation
-			$minNoticeTime = $reservationTime - ceil($r->minNotice * 60);			// Time Stamp of lastest time for reservation
-			$dayOfWeek = date("N",strtotime($date)) - 1;							// Index of day of week 
-			$endDate = date("Y-m-d",strtotime(ceil($r->reservationLength)." minutes",strtotime($date)));
-			$endTime = date("G:i:s",strtotime(ceil($r->reservationLength)." minutes",strtotime($time)));
-			$reservationLengthSec = $r->reservationLength * 60;
-			$reservationTimeUnix = strtotime($date . " " . $time);
-			
-			if ($currTime < $maxNoticeTime || $currTime > $minNoticeTime || $reservationTime < $currTime)
+			if (!$foundTables)
 			{
-				// Reservation time is out of bounds
 				return FALSE;	
 			}
 			
-			// Check if time is in bounds of hours
-			$hour = $r->GetMainScheduleList();
+			$mysqli = openDB();
 			
-			$day[0] = $hour[($dayOfWeek + 5) % 7];
-			$day[1] = $hour[($dayOfWeek + 6) % 7];
-			$day[2] = $hour[$dayOfWeek];
-			$day[3] = $hour[($dayOfWeek + 1) % 7];
-			$day[4] = $hour[($dayOfWeek + 2) % 7];
+			$mysqli->begin_transaction();
 			
-			$j = 0;
+			$stmt = $mysqli->prepare("INSERT INTO reservations (restaurant_id,user_id,date,start_time,number_of_people) 
+												  VALUES(?,?,?,?,?)");
 			
-			// Assemble special schedule into array
-			for($i = -2; $i < 3; ++$i,$temp = FALSE,++$j)
+			$stmt->bind_param("iissi",$r->id,$uid,$date,$time,$numberOfPeople);
+			
+			if(!$stmt->execute())
 			{
-				$newDate = date('Y-m-d', strtotime("$i day", strtotime($date)));
-				
-				if ($temp = $r->GetSpecialSchedule($newDate))
-				{
-					$day[$j] = $temp;
-				}
-				else
-				{
-					$day[$j]->day = $newDate;	
-				}
-			}
-			echo "<pre>";
-			print_r($day);
-			echo "</pre>";
-
-			$nList = array();
-			
-			// Build list
-			$i = 0;
-			$j = 0;
-			foreach ($day as $d)
-			{
-				if (!$d->isClosed)
-				{
-					if ($d->open != NULL)
-					{
-						$nList[$i++] = new Node($d->open,$d->day,'o');
-					}
-					
-					if ($d->close != NULL && $d->open != NULL)
-					{
-						if ($d->open > $d->close)
-							$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
-						else
-							$nList[$i++] = new Node($d->close,$d->day,'c');
-					}
-					elseif($d->close != NULL && $d->open == NULL)
-					{
-					//	if ($d->close < $day[($j + 1) % 7]->open)	
-					//		$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
-					//	else
-							$nList[$i++] = new Node($d->close,$d->day,'c');	
-					}
-				}
-				else
-				{
-					$nList[$i++] = new Node($d->close,$d->day,'-',TRUE);		
-				}
-				++$j;
-			}
-			
-			echo "<pre>";
-			print_r($nList);
-			echo "</pre>";
-			
-			$nCount = count($nList);
-			$location = NULL;
-			
-			for($i = 0; $i < $nCount; ++$i)
-			{
-				
-				$dateTime = strtotime("{$nList[$i]->date} {$nList[$i]->time}");
-				$endDateTime = strtotime("$endDate $endTime");
-				$startDateTime = strtotime("$date $time");
-				
-				if ( ($nList[$i]->type =='o' && $dateTime <= $startDateTime) ||
-					 ($nList[$i]->type == 'c' && $dateTime >= $endDateTime) )
-				{
-					if (array_key_exists($i+1,$nList) && ($nList[$i]->type =='o'))
-					{	
-						$dateTime = strtotime($nList[$i+1]->date . " " . $nList[$i+1]->time);
-						
-						if ($nList[$i+1]->type =='c' && $dateTime >= $endDateTime)
-						{
-							$location = $i;
-							break;
-						}
-						else
-						{
-							$location = NULL;	
-						}
-					}
-					elseif (array_key_exists($i-1,$nList) && ($nList[$i]->type =='c'))
-					{
-						$dateTime = strtotime("{$nList[$i-1]->date} {$nList[$i-1]->time}");
-						
-						if ($nList[$i-1]->type =='o' && $dateTime <= $startDateTime)
-						{
-							$location = $i;
-							break;
-						}
-						else
-						{
-							$location = NULL;	
-						}
-					}
-					else					
-					{
-						$location  = $i;
-					}
-				} 	
-			}
-			
-			if ($location === NULL && $nCount != 0)
-			{
-				// Out of bounds in time
-				echo "out of bounds";
+				$mysqli->rollback();
 				return FALSE;
 			}
+			
+			
+			$insertID = $stmt->insert_id;
+			
+			$stmt->close();
+			
+			$stmt = $mysqli->prepare("INSERT INTO tables_in_reservation (reservation_id,table_id) VALUES(?,?)");
+			
+			$stmt->bind_param("ii",$insertID,$tid);
+			
+			foreach($foundTables as $found)
+			{
+				$tid = $found->id;
 				
-			// Return tables available in that time 
+				if(!$stmt->execute())
+				{
+					$mysqli->rollback();
+					return FALSE;					
+				}
+			}
+			
+			$mysqli->commit();
+			
+			// Return Reservation Object	
+			return self::GetReservationFromReservationID($insertID);
+			
+		}
+		
+		public static function GetReservationFromReservationID($id)
+		{
+			$mysqli = openDB();
+		
+		}
+		
+		public static function SearchReservation(Restaurant $r,$uid,$date,$time,$numberOfPeople)
+		{	
+			if(!self::GetBounds($r,$time,$date))	
+			{
+				return FALSE;	
+			}
+			
+			// Check if user has reservation in that time frame
+			date_default_timezone_set('America/New_York');
+			$reservationLengthSec = $r->reservationLength * 60;
+			$reservationTimeUnix = strtotime($date . " " . $time);	
+			
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("SELECT id FROM reservations WHERE user_id=? AND restaurant_id=? AND
+							 (((UNIX_TIMESTAMP(TIMESTAMP(date,start_time)) + ?) >= ?) AND ((? + ?) >=
+														UNIX_TIMESTAMP(TIMESTAMP(date,start_time))))");
+														
+			$stmt->bind_param("iiiiii",$uid,$r->id,$reservationLengthSec,$reservationTimeUnix,$reservationTimeUnix,
+										$reservationLengthSec);
+			
+			if ($stmt->execute() && $stmt->fetch())
+			{
+				return FALSE;
+			}
+			
+			return self::GetTables($r,$date,$time,$numberOfPeople);
+	
+		}
+		
+		public static function GetTables(Restaurant $r,$date,$time,$numberOfPeople)
+		{
+			date_default_timezone_set('America/New_York');
+			$reservationLengthSec = $r->reservationLength * 60;
+			$reservationTimeUnix = strtotime($date . " " . $time);	
 						
 			$query = "SELECT ta.id,ta.name,ta.capacity,ta.can_combine,ta.description,ta.reserve_online,ta.restaurant_id 
 						FROM tables ta WHERE ta.id 
@@ -236,9 +181,150 @@
 					break;
 				}
 			}
-				echo "<pre>";
-				print_r($found);
-				echo "</pre>";
+			
+			if($found == array())
+			{
+				return FALSE;	
+			}
+			else
+			{
+				return $found;
+			}
+		}
+		
+		public static function GetBounds(Restaurant $r,$date,$time)
+		{
+			// Check if time is in window
+			date_default_timezone_set('America/New_York');
+			$reservationTime = floor(strtotime("$date $time") / 60);				// Time Stamp of reservation
+			$currTime = floor(time() / 60);											// Current Time Stamp Number of minutes
+			$maxNoticeTime = $reservationTime - ceil($r->maxNotice * 60);			// Time Stamp of earliest time for resrvation
+			$minNoticeTime = $reservationTime - ceil($r->minNotice * 60);			// Time Stamp of lastest time for reservation
+			$dayOfWeek = date("N",strtotime($date)) - 1;							// Index of day of week 
+			$endDate = date("Y-m-d",strtotime(ceil($r->reservationLength)." minutes",strtotime($date)));
+			$endTime = date("G:i:s",strtotime(ceil($r->reservationLength)." minutes",strtotime($time)));
+	
+			
+			if ($currTime < $maxNoticeTime || $currTime > $minNoticeTime || $reservationTime < $currTime)
+			{
+				// Reservation time is out of bounds
+				return FALSE;	
+			}
+			
+			// Check if time is in bounds of hours
+			$hour = $r->GetMainScheduleList();
+			
+			$day[0] = $hour[($dayOfWeek + 5) % 7];
+			$day[1] = $hour[($dayOfWeek + 6) % 7];
+			$day[2] = $hour[$dayOfWeek];
+			$day[3] = $hour[($dayOfWeek + 1) % 7];
+			$day[4] = $hour[($dayOfWeek + 2) % 7];
+			
+			$j = 0;
+			
+			// Assemble special schedule into array
+			for($i = -2; $i < 3; ++$i,$temp = FALSE,++$j)
+			{
+				$newDate = date('Y-m-d', strtotime("$i day", strtotime($date)));
+				
+				if ($temp = $r->GetSpecialSchedule($newDate))
+				{
+					$day[$j] = $temp;
+				}
+				else
+				{
+					$day[$j]->day = $newDate;	
+				}
+			}
+
+			$nList = array();
+			
+			// Build list
+			$i = 0;
+			$j = 0;
+			foreach ($day as $d)
+			{
+				if (!$d->isClosed)
+				{
+					if ($d->open != NULL)
+					{
+						$nList[$i++] = new Node($d->open,$d->day,'o');
+					}
+					
+					if ($d->close != NULL && $d->open != NULL)
+					{
+						if ($d->open > $d->close)
+							$nList[$i++] = new Node($d->close,date('Y-m-d', strtotime("1 day", strtotime($d->day))),'c');
+						else
+							$nList[$i++] = new Node($d->close,$d->day,'c');
+					}
+					elseif($d->close != NULL && $d->open == NULL)
+					{
+							$nList[$i++] = new Node($d->close,$d->day,'c');	
+					}
+				}
+				else
+				{
+					$nList[$i++] = new Node($d->close,$d->day,'-',TRUE);		
+				}
+				++$j;
+			}
+
+			$nCount = count($nList);
+			$location = NULL;
+			
+			for($i = 0; $i < $nCount; ++$i)
+			{
+				
+				$dateTime = strtotime("{$nList[$i]->date} {$nList[$i]->time}");
+				$endDateTime = strtotime("$endDate $endTime");
+				$startDateTime = strtotime("$date $time");
+				
+				if ( ($nList[$i]->type =='o' && $dateTime <= $startDateTime) ||
+					 ($nList[$i]->type == 'c' && $dateTime >= $endDateTime) )
+				{
+					if (array_key_exists($i+1,$nList) && ($nList[$i]->type =='o'))
+					{	
+						$dateTime = strtotime($nList[$i+1]->date . " " . $nList[$i+1]->time);
+						
+						if ($nList[$i+1]->type =='c' && $dateTime >= $endDateTime)
+						{
+							$location = $i;
+							break;
+						}
+						else
+						{
+							$location = NULL;	
+						}
+					}
+					elseif (array_key_exists($i-1,$nList) && ($nList[$i]->type =='c'))
+					{
+						$dateTime = strtotime("{$nList[$i-1]->date} {$nList[$i-1]->time}");
+						
+						if ($nList[$i-1]->type =='o' && $dateTime <= $startDateTime)
+						{
+							$location = $i;
+							break;
+						}
+						else
+						{
+							$location = NULL;	
+						}
+					}
+					else					
+					{
+						$location  = $i;
+					}
+				} 	
+			}
+			
+			if ($location === NULL && $nCount != 0)
+			{
+				// Out of bounds in time
+				return FALSE;
+			}	
+			
+			return TRUE;		
 		}
 		
 		private static function Find_Combinations($numbers,$target,&$item = array(),$partial = array())
