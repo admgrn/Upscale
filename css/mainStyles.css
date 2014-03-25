@@ -382,3 +382,7 @@ h3.loginError {
 .mainScheduleBox {
 	font-size:14px;	
 }
+
+div.ui-datepicker{
+ font-size:12px;
+}

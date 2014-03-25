@@ -6,6 +6,16 @@
 <title><?php echo $title;?></title>
 <link href="<?php echo ROOT_URL;?>/css/mainStyles.css" rel="stylesheet" type="text/css" />
 <script src='<?php echo ROOT_URL;?>/js/jquery-2.1.0.js'></script>
+<script src="<?php echo ROOT_URL;?>/js/jquery-ui-1.10.4.custom.min.js"></script>
+<script>
+	$.datepicker.setDefaults({
+	  showOn: "both",
+	  dateFormat: "yy-mm-dd",
+	  prevText: "Earlier",
+	});	
+</script>
+
+<link rel="stylesheet" href="<?php echo ROOT_URL;?>/css/smoothness/jquery-ui-1.10.4.custom.min.css">
 </head>
 
 <body>

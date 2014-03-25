@@ -18,10 +18,15 @@
         <div id='mainContentsLogin'>
         
         <form action='<?php echo THIS_PAGE;?>' method='post'>
-        	<input type='date' name='date' />
+        	<input type='text' name='date' id='date' />
         	<?php $form->TimeSelection("time"); ?>
             <input type='submit' />
         </form>
+                    <script>
+						$(function() {
+						$( "#date" ).datepicker();
+						});
+					</script>
 
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/mainFooter.php"); ?>

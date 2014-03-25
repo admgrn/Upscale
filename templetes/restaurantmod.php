@@ -250,6 +250,7 @@
                     <script type='text/javascript'>
 						function CheckDate(date)
 						{
+							
 							if (date == "")
 							{
 								alert("Please Enter a valid date");
@@ -264,7 +265,7 @@
 							
 							dt = dt.getFullYear() 
 								 + ('0' + (dt.getMonth() + 1)).slice(-2)
-								 + ('0' + dt.getDay()).slice(-2);
+								 + ('0' + dt.getDate()).slice(-2);
 							
 							if (parseInt(date) < parseInt(dt))
 							{
@@ -326,7 +327,7 @@
                        <form method='post' action='<?php echo ROOT_URL."/editrestaurant/$page->id";?>#special'>
                        <tr>
                        		<td><?php echo $i;?></td>
-                            <td><input type='date' name='dateSP' id='dateSP' /></td>
+                            <td><input type='text' name='dateSP' id='dateSP' placeholder='date' /></td>
                             <td><?php $formSP->TimeSelection("openSP");?></td>
                             <td><?php $formSP->TimeSelection("closeSP");?></td>
                             <td><label><input type='checkbox' name='closedSP' value='1' />closed</label></td>
@@ -340,6 +341,11 @@
                         </tr>
                       </table>
                 	</form>
+                    <script>
+						$(function() {
+						$( "#dateSP" ).datepicker();
+						});
+					</script>
                 </div>        
               </div>      
        	  <?php }?>

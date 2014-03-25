@@ -166,10 +166,7 @@
 				echo "out of bounds";
 				return FALSE;
 			}
-			
-		
-			// TODO check if time window spans more than one day
-			
+				
 			// Return tables available in that time 
 						
 			$query = "SELECT t.id,t.name,t.capacity,t.can_combine,t.description,t.reserve_online FROM reservations r 	
