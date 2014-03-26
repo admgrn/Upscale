@@ -7,12 +7,10 @@
 		public $date;
 		public $startTime;
 		public $numberOfPeople;	
-		public $tables;
 		public $tableCount;
 		
-		
-		public function __constructor($id = NULL,$restaurantID = NULL,$userID = NULL,$date = NULL,$startTime = NULL,
-									  $numberOfPeople = NULL,$tables = NULL,$tableCount)
+		public function __construct($id = NULL,$restaurantID = NULL,$userID = NULL,$date = NULL,$startTime = NULL,
+									  $numberOfPeople = NULL,$tableCount = NULL)
 		{
 			$this->id = $id;
 			$this->restaurantID = $restaurantID;
@@ -20,12 +18,12 @@
 			$this->date = $date;
 			$this->startTime = $startTime;
 			$this->numberOfPeople = $numberOfPeople;
-			$this->tables = $tables;
-			$this->tableCount;
+			$this->tableCount = $tableCount;
 		}
 		
 		public static function MakeReservation(Restaurant $r,$uid,$date,$time,$numberOfPeople)
 		{			
+		
 			$foundTables = self::SearchReservation($r,$uid,$date,$time,$numberOfPeople);
 			
 			if (!$foundTables)
@@ -67,7 +65,7 @@
 					return FALSE;					
 				}
 			}
-			
+		
 			$mysqli->commit();
 			
 			// Return Reservation Object	
@@ -78,12 +76,58 @@
 		public static function GetReservationFromReservationID($id)
 		{
 			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
+									  COUNT(tr.reservation_id) AS table_count
+									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
+										r.id = tr.reservation_id WHERE r.id=? GROUP BY r.id");
+			$stmt->bind_param("i",$id);
+			
+			$stmt->bind_result($resid,$rid,$uid,$date,$time,$nop,$tableCount);
+			
+			if ($stmt->execute() && $stmt->store_result() && $stmt->fetch())
+			{
+				return new Reservations($resid,$rid,$uid,$date,$time,$nop,$tableCount);	
+			}
+			else
+			{
+				return FALSE;	
+			}
 		
+		}
+		
+		public function GetTableList()
+		{
+			$list = array();
+			
+			if ($this->tableCount > 0)
+			{
+				$mysqli = openDB();
+				
+				$stmt = $mysqli->prepare("SELECT t.id,t.name,t.restaurant_id,t.capacity,t.can_combine,t.description,t.reserve_online FROM 
+											tables t JOIN tables_in_reservation tr ON t.id = tr.table_id 
+													 JOIN reservations r ON tr.reservation_id = r.id WHERE r.id=?");
+				$stmt->bind_param("i",$this->id);
+				
+				$stmt->bind_result($id,$name,$rid,$capacity,$canCombine,$description,$reserveOnline);
+				
+				$stmt->execute();
+				$stmt->store_result();
+				
+				$i = 0;
+				
+				while($stmt->fetch())
+				{
+					$list[$i++] = new Table($id,$name,$rid,$capacity,$canCombine,$description,$reserveOnline);
+				}
+			}
+				
+			return $list;				
 		}
 		
 		public static function SearchReservation(Restaurant $r,$uid,$date,$time,$numberOfPeople)
 		{	
-			if(!self::GetBounds($r,$time,$date))	
+			if(!self::GetBounds($r,$date,$time))	
 			{
 				return FALSE;	
 			}
@@ -269,7 +313,7 @@
 				}
 				++$j;
 			}
-
+			
 			$nCount = count($nList);
 			$location = NULL;
 			

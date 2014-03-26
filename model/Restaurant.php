@@ -356,19 +356,24 @@
 				return FALSE;
 		}
 		
-		public static function GetRestaurant($uid,$rid)
+		public static function GetRestaurant($rid, $active = FALSE)
 		{
 			$mysqli = openDB();
 			$r = new Restaurant;
 			
+			if (!$active)
+				$sa = "";
+			else
+				$sa = "AND r.status=1 ";
+			
 			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
 						r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
 					  FROM restaurants r LEFT JOIN tables t ON 
-					  	r.id = t.restaurant_id WHERE r.manager_id=? AND r.id=? GROUP BY r.id";
+					  	r.id = t.restaurant_id WHERE r.id=? ".$sa."GROUP BY r.id";
 						
 			$stmt = $mysqli->prepare($query);
-			
-			$stmt->bind_param("ii",$uid,$rid);
+
+			$stmt->bind_param("i",$rid);
 			$stmt->bind_result($r->id,$r->name,$r->address,$r->phoneNumber,$r->longitude,$r->latitude,$r->maxNotice,
 								   $r->minNotice,$r->reservationLength,$r->tableCount,$r->managerID,$r->status);
 			
@@ -528,6 +533,11 @@
 			elseif(!preg_match('/^[0-9]+(\.([0-9]+)?)?$/',$resTime))
 			{
 				$error->SetError("resTimeFormat");
+				$status = FALSE;
+			}
+			elseif($resTime > 720)
+			{
+				$error->SetError("resLength");
 				$status = FALSE;
 			}
 			

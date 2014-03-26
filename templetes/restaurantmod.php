@@ -24,7 +24,7 @@
 											   $_POST['phoneNumber'],$_POST['maxTime'],$_POST['minTime'],$_POST['length'],
 											   $_POST['long'],$_POST['lat']);
 											   
-		$page = Restaurant::GetRestaurant($_SESSION['id'],$page->id);
+		$page = Restaurant::GetRestaurant($page->id);
 		$page->SetMainSchedule($_POST,"open","close","closed","isopen","isclosed");
 	}
 	else
@@ -183,6 +183,7 @@
                             $errors->GetError("minResFormat","\t<li>Minimum reservation invalid format</li>");
                             $errors->GetError("minResNull","\t<li>Minimum reservation time cannot be empty</li>");
                             $errors->GetError("resTimeNull","\t<li>Reservation time cannot be empty</li>");
+							$errors->GetError("resLength","\t<li>Reservationlength cannot be greater than 12 hours (720 mins)</li>");
                             $errors->GetError("resTimeFormat","\t<li>Reservation length invalid format</li>");
                             if ($errors->GetState()) echo "</ul>";
                     ?>
@@ -192,7 +193,7 @@
                         <input type='text' name='phoneNumber' placeholder='phone number' class='inputField<?php $errors->GetError(array("phoneNumberNull","phoneNumberFormat")," borderError");?>' <?php echo $form->GetValue('phoneNumber');?> />
                         <input type='text' name='maxTime' placeholder='max reservation notice (in hours)' class='inputField<?php $errors->GetError(array("maxResNull","maxResFormat")," borderError");?>' <?php echo $form->GetValue('maxTime');?> />
                         <input type='text' name='minTime' placeholder='min reservation notice (in hours)' class='inputField<?php $errors->GetError(array("minResNull","minResFormat")," borderError");?>' <?php echo $form->GetValue('minTime');?>/>
-                        <input type='text' name='length' placeholder='reservation length (in minutes)' class='inputField<?php $errors->GetError(array("resTimeNull","resTimeFormat")," borderError");?>' <?php echo $form->GetValue('length');?>/>
+                        <input type='text' name='length' placeholder='reservation length (in minutes)' class='inputField<?php $errors->GetError(array("resTimeNull","resTimeFormat","resLength")," borderError");?>' <?php echo $form->GetValue('length');?>/>
                         <input type='hidden' name='long' id='long' <?php echo $form->GetValue('long');?> />
                         <input type='hidden' name='lat' id='lat' <?php echo $form->GetValue('lat');?> />
                         <?php

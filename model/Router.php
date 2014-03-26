@@ -91,7 +91,7 @@ class Router
 				case "editrestaurant":
 					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
 					{
-						$this->params = Restaurant::GetRestaurant($_SESSION['id'],$URLArray[2]);
+						$this->params = Restaurant::GetRestaurant($URLArray[2]);
 						if ($this->params)
 						{
 							$file = "/templetes/restaurantmod.php";
@@ -104,7 +104,7 @@ class Router
 				case "edittables":
 					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
 					{
-						$this->params = Restaurant::GetRestaurant($_SESSION['id'],$URLArray[2]);
+						$this->params = Restaurant::GetRestaurant($URLArray[2]);
 						if ($this->params)
 						{
 							$file = "/templetes/managetables.php";
@@ -136,7 +136,13 @@ class Router
 					$file = "/templetes/mainmap.php";
 					break;
 				case "reservations":
-					$this->params = "user";
+					$this->params[0] = "user";
+					$this->params[1] = FALSE;	
+									
+					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					{
+						$this->params[1] = Restaurant::GetRestaurant($URLArray[2], $active = TRUE);
+					}
 					$file = "/templetes/reservations.php";
 					break;
 				default:

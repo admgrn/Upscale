@@ -386,3 +386,46 @@ h3.loginError {
 div.ui-datepicker{
  font-size:12px;
 }
+
+.leftMakeRes {
+	padding:10px;
+	float:left;
+	display:inline;
+	width:360px;	
+}
+
+.spacing {
+	margin:10px;
+}
+
+.details {
+	margin:20px auto;
+	padding: 30px 20px;
+	width:400px;
+	border:#e1e1e1 solid 1px;
+}
+
+.details td {
+	padding: 3px 10px;
+}
+
+.scheduleList {
+	margin:20px 0px 20px 0px;
+	padding: 30px 20px;
+	width:300px;
+	border:#e1e1e1 solid 1px;
+}
+
+.scheduleList td {
+	padding: 3px 10px;
+}
+
+
+.firstColDetails {
+	font-weight:bold;	
+}
+
+.boldLink {
+	font-weight:bold;
+	color:#000;	
+}

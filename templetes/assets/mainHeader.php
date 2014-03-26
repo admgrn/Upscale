@@ -9,7 +9,6 @@
 <script src="<?php echo ROOT_URL;?>/js/jquery-ui-1.10.4.custom.min.js"></script>
 <script>
 	$.datepicker.setDefaults({
-	  showOn: "both",
 	  dateFormat: "yy-mm-dd",
 	  prevText: "Earlier",
 	});	
@@ -42,7 +41,7 @@
 							if ($page == "user")
 							{
 								
-								echo "<a href='". ROOT_URL . "/find' class='mainButtonWhite' title='find reservations'>find reservations</a>";
+								echo "<a href='". ROOT_URL . "/reservations' class='mainButtonWhite' title='find reservations'>find reservations</a>";
 								echo "<a href='". ROOT_URL . "/myreservations' class='mainButtonWhite' title='my reservations'>my reservations</a>";
 								echo "<a href='". ROOT_URL . "/map' class='mainButtonWhite' title='restaurant map'>restaurant map</a>";
 								echo "<a href='". ROOT_URL . "/restaurants' class='mainButtonWhite' title='restaurants'>restaurants</a>";
