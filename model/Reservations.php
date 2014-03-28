@@ -42,6 +42,7 @@
 			
 			if(!$stmt->execute())
 			{
+				Errors::Create("resCreate")->SetError("generalError");
 				$mysqli->rollback();
 				return FALSE;
 			}
@@ -61,6 +62,7 @@
 				
 				if(!$stmt->execute())
 				{
+					Errors::Create("resCreate")->SetError("generalError");
 					$mysqli->rollback();
 					return FALSE;					
 				}
@@ -96,6 +98,30 @@
 		
 		}
 		
+		public static function FindAllReservations($uid,$date,$time,$numberOfPeople)
+		{
+			$restaurants = Restaurant::GetAllRestaurants();
+			
+			$rList = array();
+			
+			foreach($restaurants as $r)
+			{
+				if(self::SearchReservation($r,$uid,$date,$time,$numberOfPeople))
+				{
+					array_push($rList,$r);
+				}
+			}
+			
+			if ($rList == array())
+			{
+				return FALSE;
+			}	
+			else
+			{
+				return $rList;	
+			}
+		}
+		
 		public function GetTableList()
 		{
 			$list = array();
@@ -129,6 +155,7 @@
 		{	
 			if(!self::GetBounds($r,$date,$time))	
 			{
+				Errors::Create("resCreate")->SetError("boundError");
 				return FALSE;	
 			}
 			
@@ -148,6 +175,7 @@
 			
 			if ($stmt->execute() && $stmt->fetch())
 			{
+				Errors::Create("resCreate")->SetError("resAlready");
 				return FALSE;
 			}
 			
@@ -228,6 +256,8 @@
 			
 			if($found == array())
 			{
+				
+				Errors::Create("resCreate")->SetError("noTables");
 				return FALSE;	
 			}
 			else

@@ -279,9 +279,9 @@ h3.loginError {
 }
 
 .loginErrorListBlack {
-	margin:0px;
+	margin:4px;
 	padding:0px;
-	font-size:15px;
+	font-size:13px;
 	font-weight:bold;
 	color:#000;
 	text-align:center;
@@ -394,6 +394,19 @@ div.ui-datepicker{
 	width:360px;	
 }
 
+.centerMakeRes {
+	margin:0px auto;
+	padding:10px;
+	width:300px;	
+}
+
+.rightMakeRes {
+	padding:10px 10px 10px 70px;
+	float:left;
+	display:inline;
+	width:300px;	
+}
+
 .spacing {
 	margin:10px;
 }
@@ -428,4 +441,13 @@ div.ui-datepicker{
 .boldLink {
 	font-weight:bold;
 	color:#000;	
+}
+
+.res {
+	margin:20px 0px 4px 0px;	
+}
+
+.sub {
+	margin: 0px 3px 20px 0px;
+	padding:0px;	
 }

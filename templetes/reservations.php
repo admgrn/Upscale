@@ -8,7 +8,12 @@
 	
 	if (!$info)
 	{
-		$r = Restaurant::GetAllRestaurants();	
+		$reserve = FALSE;
+		
+		if(isset($_POST['timeAll']))
+		{
+			$reserve = Reservations::FindAllReservations($_SESSION['id'],$_POST['dateAll'],$_POST['timeAll'],$_POST['peopleAll']);
+		}
 	}
 	else
 	{
@@ -21,7 +26,7 @@
 		}
 	}
 	
-	if ($info)
+	if (!$info)
 		$title = "Upscale™ - Search All Reservations";
 	else
 		$title = "Upscale™ - Reservations - $info->name";
@@ -87,6 +92,16 @@
             	<div class='infoBox'>
                 	<div class='leftMakeRes' style='text-align:center'>
                         <h3>Make Reservation - <?php echo $info->name;?></h3>
+                       	<?php 
+							$error = Errors::Create("resCreate");
+							
+							if ($error->GetState()) echo "<ul class='loginErrorListBlack'>";
+							$error->GetError("generalError","\t<li>There was an error. Please try again.</li>\n");
+							$error->GetError("boundError","\t<li>The reservation is not during the restaurants open hours.</li>\n");
+							$error->GetError("noTables","\t<li>There are tables no available tables for that time.</li>\n");
+							$error->GetError("resAlready","\t<li>You already have a reservation during that time.</li>\n");
+							if ($error->GetState()) echo "</ul>";
+						?>
                         <form action='<?php echo THIS_PAGE;?>' method='post'>
                             <input type='text' name='date' id='date' <?php echo $form->GetValue('date');?> placeholder='date' class='inputField' />
                             <input type='text' name='people' <?php echo $form->GetValue('people');?> placeholder='number in party' class='inputField' />
@@ -99,7 +114,7 @@
                             });
                         </script>
                 	</div>
-                 	<div class='leftMakeRes'>
+                 	<div class='rightMakeRes'>
                     	<h3>Schedule</h3>
                         <table class='scheduleList'>
                         <?php
@@ -141,6 +156,50 @@
                     </div>
             	</div>
             </div>
-		<? } ?>
+		<?php }else { ?>
+       		<div id='layerEdit'>
+            	<div class='infoBox'>
+                	<div class='<?php if ($reserve) echo "leftMakeRes"; else echo "centerMakeRes";?>' style='text-align:center'>
+                        <h3>Search All Restaurants</h3>
+                        <form action='<?php echo THIS_PAGE;?>' method='post'>
+                            <input type='text' name='dateAll' id='date1' <?php echo $form->GetValue('dateAll');?> placeholder='date' class='inputField' />
+                            <input type='text' name='peopleAll' <?php echo $form->GetValue('peopleAll');?> placeholder='number in party' class='inputField' />
+                            <div class='spacing'><?php $form->TimeSelection("timeAll"); ?></div>
+                            <input type='submit' value='Search' class='mainButton' />
+                        </form>
+                        <script>
+                            $(function() {
+                            $( "#date1" ).datepicker();
+                            });
+                        </script>
+                	</div>
+                      <?php if ($reserve) { ?>
+                        <div class='rightMakeRes'>
+                            <h3 class='res'>Found Reservations</h3>
+							<h4 class='sub'><?php echo date("l, F j, Y - g:i A",strtotime($_POST['dateAll'] . " " . $_POST['timeAll']));?></h4>
+                            <table class='sub'>
+                            <?php 
+								$i = 0;
+                                foreach($reserve as $r)
+                                {
+									if ($i++ == 0) 
+										$p = "checked='checked' ";
+									else
+										$p = "";
+										
+                                    echo "<tr>
+									        <td><input type='radio' name='restChoose' value='$r->id' $p/></td>
+									        <td><a href='".ROOT_URL."/restaurants/$r->id' target='_blank' title='$r->name' class='boldLink'>$r->name</a><td></td>
+										  </tr>";
+                                }
+                            ?>
+                            </table>
+                            <input type='submit' value='Make Reservation' class='mainButton' />
+                        </div>
+                        <?php } ?>
+                    </div>
+                  </div>
+                 </div>
+        <?php } ?>
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/mainFooter.php"); ?>
