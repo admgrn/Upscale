@@ -136,14 +136,35 @@ class Router
 					$file = "/templetes/mainmap.php";
 					break;
 				case "reservations":
-					$this->params[0] = "user";
-					$this->params[1] = FALSE;	
-									
-					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					if (isset($URLArray[2]) && $URLArray[2] == "edit")
 					{
-						$this->params[1] = Restaurant::GetRestaurant($URLArray[2], $active = TRUE);
+						if (isset($URLArray[3]) && is_numeric($URLArray[3]))
+						{
+							$this->params[0] = "user";
+							$this->params[1] = Reservations::GetReservationFromRIDAndUID($URLArray[3],$_SESSION['id']);
+							if ($this->params[1])
+								break;
+						}
+						
+						$this->notFound = TRUE;
+						$file = "/templetes/404.php";
+						break;
 					}
-					$file = "/templetes/reservations.php";
+					else
+					{
+						$this->params[0] = "user";
+						$this->params[1] = FALSE;	
+										
+						if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+						{
+							$this->params[1] = Restaurant::GetRestaurant($URLArray[2], $active = TRUE);
+						}
+						$file = "/templetes/reservations.php";
+					}
+					break;
+				case "myreservations":
+					$this->params = "user";
+					$file = "/templetes/myreservations.php";
 					break;
 				default:
 					$this->notFound = TRUE;

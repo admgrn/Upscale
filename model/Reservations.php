@@ -21,9 +21,11 @@
 			$this->tableCount = $tableCount;
 		}
 		
-		public static function MakeReservation(Restaurant $r,$uid,$date,$time,$numberOfPeople)
+		public static function MakeReservation(Restaurant $r,$uid,&$date,&$time,&$numberOfPeople)
 		{			
-		
+			if (!self::Validate($date,$time,$numberOfPeople))
+				return FALSE;
+				
 			$foundTables = self::SearchReservation($r,$uid,$date,$time,$numberOfPeople);
 			
 			if (!$foundTables)
@@ -75,6 +77,39 @@
 			
 		}
 		
+		public static function GetAllUserReservations($id)
+		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
+									  COUNT(tr.reservation_id) AS table_count
+									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
+										r.id = tr.reservation_id WHERE r.user_id=? GROUP BY r.id");
+										
+			echo $mysqli->error;
+			$stmt->bind_param("i",$id);
+			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+			
+			$stmt->execute();
+			
+			$list = array();
+			
+			while($stmt->fetch())
+			{
+				$reservation = new Reservations($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+				array_push($list,$reservation);
+			}
+			
+			if ($list == array())
+			{
+				return FALSE;
+			}
+			else
+			{
+				return $list;	
+			}		
+		}
+		
 		public static function GetReservationFromReservationID($id)
 		{
 			$mysqli = openDB();
@@ -98,8 +133,34 @@
 		
 		}
 		
-		public static function FindAllReservations($uid,$date,$time,$numberOfPeople)
+		public static function GetReservationFromRIDAndUID($rid,$uid)
 		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
+									  COUNT(tr.reservation_id) AS table_count
+									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
+										r.id = tr.reservation_id WHERE r.id=? AND r.user_id=? GROUP BY r.id");
+			$stmt->bind_param("ii",$rid,$uid);
+			
+			$stmt->bind_result($resid,$id,$userid,$date,$time,$nop,$tableCount);
+			
+			if ($stmt->execute() && $stmt->store_result() && $stmt->fetch())
+			{
+				return new Reservations($resid,$id,$userid,$date,$time,$nop,$tableCount);	
+			}
+			else
+			{
+				return FALSE;	
+			}
+		
+		}
+		
+		public static function FindAllReservations($uid,&$date,&$time,&$numberOfPeople)
+		{
+			if (!self::Validate($date,$time,$numberOfPeople))
+				return FALSE;
+				
 			$restaurants = Restaurant::GetAllRestaurants();
 			
 			$rList = array();
@@ -111,9 +172,9 @@
 					array_push($rList,$r);
 				}
 			}
-			
 			if ($rList == array())
 			{
+				Errors::Create("resCreate")->SetError("nonefoundError");
 				return FALSE;
 			}	
 			else
@@ -456,9 +517,44 @@
 				$remaining = array_slice($numbers,$i+1); 
 				array_push($partial,$n);
 				self::Find_Combinations($remaining,$target,$item,$partial);
+			}	
+		}
+		
+		private static function Validate(&$date,&$time,&$people)
+		{
+			date_default_timezone_set('America/New_York');
+			$status = TRUE;
+			$error = Errors::Create("resCreate");
+			
+			$date = trim($date);
+			$time = trim($time);
+			$people = $people;
+			
+			if ($date == "")
+			{
+				$status = FALSE;
+				$error->SetError("dateSet");
 			}
-  
-				
+			
+			if ($time == "")
+			{
+				$status = FALSE;
+				$error->SetError("timeSet");
+			}
+			
+			if ($people == "")
+			{
+				$status = FALSE;
+				$error->SetError("peopleSet");
+			}
+			
+			if (time() > strtotime("$date $time"))
+			{
+				$status = FALSE;
+				$error->SetError("futureCheck");
+			}
+			
+			return $status;		
 		}
 	}
 ?>
