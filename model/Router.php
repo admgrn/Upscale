@@ -143,7 +143,10 @@ class Router
 							$this->params[0] = "user";
 							$this->params[1] = Reservations::GetReservationFromRIDAndUID($URLArray[3],$_SESSION['id']);
 							if ($this->params[1])
+							{
+								$file = "/templetes/usereditreservations.php";
 								break;
+							}
 						}
 						
 						$this->notFound = TRUE;

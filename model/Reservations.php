@@ -244,6 +244,25 @@
 	
 		}
 		
+		public static function DeleteReservationForUser($rid,$uid)
+		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("DELETE FROM reservations WHERE id=? AND user_id=?");
+			
+			$stmt->bind_param("ii",$rid,$uid);
+			
+			if($stmt->execute())
+			{
+				return TRUE;
+			}
+			else
+			{
+				Errors::Create("ResUserDelete")->SetError("general");
+				return FALSE;
+			}			
+		}
+		
 		public static function GetTables(Restaurant $r,$date,$time,$numberOfPeople)
 		{
 			date_default_timezone_set('America/New_York');
