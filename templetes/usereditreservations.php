@@ -42,6 +42,9 @@
                      <tr>
                         <td class='firstColDetails'>Time: </td><td><?php echo date("g:i A",strtotime($reservation->startTime));?></td>
                      </tr>
+                      <tr>
+                        <td class='firstColDetails'>Number of People: </td><td><?php echo $reservation->numberOfPeople;?></td>
+                     </tr>
                      <tr>
                         <td class='firstColDetails'>Table(s):</td>
                         <td>
@@ -77,7 +80,7 @@
               		</form>
                 </div>
             </div    
-		<?php }else{ ?>  
+		><?php }else{ ?>  
         	<div class='center'>
           		<h3>Your Reservation has been Successfully Cancelled!</h3>
                 <a href='<?php echo ROOT_URL;?>/reservations' class='mainButton' title='back' style='position:relative;top:20px'>make a new reservation</a>

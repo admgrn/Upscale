@@ -44,7 +44,7 @@
 								$start = date("Y,",$dateStart) . (date("m",$dateStart) - 1) . date(",d,G,i",$dateStart);
 								$end = date("Y,",$dateEnd) . (date("m",$dateEnd) - 1) . date(",d,G,i",$dateEnd);
 								echo "{
-									   title: '$rest->name', 
+									   title: \"".addslashes($rest->name)."\", 
 								   	   start: new Date($start), 
 									   end: new Date($end),
 									   allDay: false,

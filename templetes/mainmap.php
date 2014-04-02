@@ -22,7 +22,7 @@
 								{
 									foreach($restaurants as $r)
 									{
-										echo "['$r->id','$r->name','$r->address','$r->phoneNumber',$r->longitude,$r->latitude],\n";									
+										echo "[\"$r->id\",\"".addslashes($r->name)."\",\"".addslashes($r->name)."\",'$r->phoneNumber',$r->longitude,$r->latitude],\n";									
 									}
 								}
 							  ?>];

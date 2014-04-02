@@ -7,7 +7,7 @@
 	
 	function openDB($db = "upscale")
 	{
-		if(!@include_once($_SERVER['DOCUMENT_ROOT'] . "/../info/login.php"))
+		if(!@include($_SERVER['DOCUMENT_ROOT'] . "/../info/login.php"))
 		{		
 			$host = "localhost"; 
 			$username = "root"; 
@@ -15,6 +15,7 @@
 		}
 		
 		$a = new mysqli($host,$username,$password);
+
 		if (!$a->select_db($db))
 		{
 			include_once($_SERVER['DOCUMENT_ROOT'] . "/database/create.php");
