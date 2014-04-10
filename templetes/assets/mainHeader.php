@@ -45,7 +45,6 @@
 								echo "<a href='". ROOT_URL . "/myreservations' class='mainButtonWhite' title='my reservations'>my reservations</a>";
 								echo "<a href='". ROOT_URL . "/map' class='mainButtonWhite' title='restaurant map'>restaurant map</a>";
 								echo "<a href='". ROOT_URL . "/restaurants' class='mainButtonWhite' title='restaurants'>restaurants</a>";
-								echo "<a href='". ROOT_URL . "/search' class='mainButtonWhite' title='search'>search</a>";
 							}
 							else
 							{

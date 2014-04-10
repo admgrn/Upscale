@@ -1,5 +1,5 @@
 <?php	
-	define('ROOT_URL','http://localhost');
+	define('ROOT_URL',"http://" . $_SERVER['SERVER_NAME']);
 	
 	define('THIS_PAGE',ROOT_URL . $_SERVER['REQUEST_URI']);
 	

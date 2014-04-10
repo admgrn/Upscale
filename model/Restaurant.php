@@ -70,7 +70,7 @@
 			
 			$stmt = $mysqli->prepare("REPLACE INTO hours(day_of_week,restaurant_id,open,close,closed) VALUES(?,?,?,?,?)");
 			$stmt->bind_param("iissi",$i,$this->id,$open,$close,$closed);
-			
+		
 			while($i < 7)
 			{
 				if (isset($a["$closedname$i"]))
@@ -104,6 +104,7 @@
 				{
 					break;	
 				}
+				
 				
 				++$i;	
 			}
@@ -324,6 +325,7 @@
 				return FALSE;
 		}
 		
+		
 		public static function GetAllRestaurants()
 		{
 			$mysqli = openDB();
@@ -333,7 +335,7 @@
 			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
 						r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
 					  FROM restaurants r LEFT JOIN tables t ON 
-					  	r.id = t.restaurant_id WHERE r.status=1 GROUP BY r.id ORDER BY r.id";
+					  	r.id = t.restaurant_id WHERE r.status=1 GROUP BY r.id ORDER BY r.name";
 			if ($stmt = $mysqli->prepare($query))
 			{
 				$stmt->bind_result($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
@@ -389,6 +391,34 @@
 				
 		}
 		
+		public static function GetRestaurantWithMID($rid, $mid)
+		{
+			$mysqli = openDB();
+			$r = new Restaurant;
+			
+			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
+						r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
+					  FROM restaurants r LEFT JOIN tables t ON 
+					  	r.id = t.restaurant_id WHERE r.id=? AND r.manager_id=? GROUP BY r.id";
+						
+			$stmt = $mysqli->prepare($query);
+
+			$stmt->bind_param("ii",$rid,$mid);
+			$stmt->bind_result($r->id,$r->name,$r->address,$r->phoneNumber,$r->longitude,$r->latitude,$r->maxNotice,
+								   $r->minNotice,$r->reservationLength,$r->tableCount,$r->managerID,$r->status);
+			
+			if ($stmt->execute() && $stmt->fetch())
+			{
+				return $r;
+					
+			}
+			else 
+			{
+				return FALSE;
+			}
+				
+		}
+		
 		public static function CreateRestaurant(&$uid,&$name,&$address,&$phoneNumber,&$maxRes,&$minRes,&$resTime,&$long,&$lat)
 		{
 			$mysqli = openDB();
@@ -401,7 +431,7 @@
 				
 				if ($stmt->execute())
 				{
-					return self::GetRestaurant($uid,$stmt->insert_id);
+					return self::GetRestaurant($stmt->insert_id);
 				}
 				else
 				{

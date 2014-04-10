@@ -79,8 +79,8 @@
                     	<input type='submit' value='Cancel this Reservation' title='cancel this reservation' class='mainButton' onclick="if(confirm('Are you sure you want to cancel this reservation? This cannot be undone.')) return true; else return false;" />
               		</form>
                 </div>
-            </div    
-		><?php }else{ ?>  
+            </div>
+			<?php }else{ ?> 
         	<div class='center'>
           		<h3>Your Reservation has been Successfully Cancelled!</h3>
                 <a href='<?php echo ROOT_URL;?>/reservations' class='mainButton' title='back' style='position:relative;top:20px'>make a new reservation</a>

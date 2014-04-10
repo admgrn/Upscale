@@ -24,7 +24,7 @@
 											   $_POST['phoneNumber'],$_POST['maxTime'],$_POST['minTime'],$_POST['length'],
 											   $_POST['long'],$_POST['lat']);
 											   
-		$page = Restaurant::GetRestaurant($page->id);
+		$page = Restaurant::GetRestaurantWithMID($page->id,$_SESSION['id']);
 		$page->SetMainSchedule($_POST,"open","close","closed","isopen","isclosed");
 	}
 	else
