@@ -389,7 +389,21 @@
 			
 		}
 		
+		public static function GetUserFromID($id)
+		{
+			$mysqli = openDB();
+			$stmt = $mysqli->prepare("SELECT * FROM users WHERE id=?");
+			$stmt->bind_param("i",$id);	
+			
+			$stmt->bind_result($id,$name,$username,$email,$password,$phone_number);
 		
+			if($stmt->execute() && $stmt->fetch())
+			{		
+				$stmt->close();
+				return new Users($id,$name,$username,$email,$phone_number,$password);
+			}
+			
+		}		
 
 		static function EncryptPassword($password)
 		{

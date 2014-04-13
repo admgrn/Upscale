@@ -73,7 +73,45 @@ class Router
 					$file = "/templetes/homepage.php";
 					break;
 				case "reservations":
-					$this->params = "";
+					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					{	
+						if (!($this->params[0] = Restaurant::GetRestaurantWithMID($URLArray[2],$_SESSION['id'],$active = TRUE)))
+						{
+							$this->params = FALSE;
+							$file = "/templetes/404.php";
+							break;
+						}
+						else
+						{
+							$this->params[1] = "future";
+						}
+						
+					}
+					elseif (isset($URLArray[2]) && $URLArray[2] == "past")
+					{
+						
+						if (isset($URLArray[3]) && is_numeric($URLArray[3]))
+						{
+							
+							if (!($this->params[0] = Restaurant::GetRestaurantWithMID($URLArray[3],$_SESSION['id'],$active = TRUE)))
+							{
+								$this->params = FALSE;
+								$file = "/templetes/404.php";
+								break;
+							}
+							else
+							{
+								$this->params[1] = "past";
+							}
+						}	
+					}
+					else
+					{	
+						$this->params = FALSE;
+						$file = "/templetes/404.php";
+						break;
+					}
+					
 					$file = "/templetes/reservationmanager.php";
 					break;
 				case "account":

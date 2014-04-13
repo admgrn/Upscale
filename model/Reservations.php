@@ -86,8 +86,65 @@
 									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
 										r.id = tr.reservation_id WHERE r.user_id=? GROUP BY r.id");
 										
-			echo $mysqli->error;
 			$stmt->bind_param("i",$id);
+			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+			
+			$stmt->execute();
+			
+			$list = array();
+			
+			while($stmt->fetch())
+			{
+				$reservation = new Reservations($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+				array_push($list,$reservation);
+			}
+			
+			if ($list == array())
+			{
+				return FALSE;
+			}
+			else
+			{
+				return $list;	
+			}		
+		}
+		
+		public static function GetAllReservationsMIDRID($mid, $rid,$past = FALSE)
+		{
+			$mysqli = openDB();
+			
+			$time = time();
+			
+			$r = Restaurant::GetRestaurantWithMID($rid, $mid, $active = TRUE);
+			
+			if (!$r)
+			{
+				return FALSE;
+			}
+			
+			$t = ceil($r->reservationLength * 60);
+			
+			if ( $past )
+			{
+				$op = "<";
+				$ord = "DESC";
+			}
+			else
+			{
+				$op = ">=";
+				$ord = "ASC";
+			}
+			
+			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
+									  COUNT(tr.reservation_id) AS table_count
+									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
+										r.id = tr.reservation_id
+									  JOIN restaurants res ON r.restaurant_id = res.id WHERE res.manager_id=? AND res.id=?
+									  AND UNIX_TIMESTAMP(TIMESTAMP(date,start_time)) $op $time - ?									  
+									  GROUP BY r.id ORDER BY r.start_time,r.date $ord");
+										
+
+			$stmt->bind_param("iii",$mid,$rid,$t);
 			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
 			
 			$stmt->execute();
@@ -259,6 +316,25 @@
 			else
 			{
 				Errors::Create("ResUserDelete")->SetError("general");
+				return FALSE;
+			}			
+		}
+		
+		public static function DeleteIDWithManID($rid,$mid)
+		{
+			$mysqli = openDB();
+			
+			$stmt = $mysqli->prepare("DELETE r FROM reservations r JOIN restaurants res ON r.restaurant_id = res.id
+									  WHERE r.id=? AND res.manager_id=?");
+									  			
+			$stmt->bind_param("ii",$rid,$mid);
+			
+			if($stmt->execute())
+			{
+				return TRUE;
+			}
+			else
+			{
 				return FALSE;
 			}			
 		}

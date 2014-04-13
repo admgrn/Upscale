@@ -358,6 +358,11 @@
 				return FALSE;
 		}
 		
+		public function GetReservations($mid, $past = FALSE)
+		{
+			return Reservations::GetAllReservationsMIDRID($mid,$this->id,$past);
+		}
+		
 		public static function GetRestaurant($rid, $active = FALSE)
 		{
 			$mysqli = openDB();
@@ -391,15 +396,20 @@
 				
 		}
 		
-		public static function GetRestaurantWithMID($rid, $mid)
+		public static function GetRestaurantWithMID($rid, $mid, $active = FALSE)
 		{
 			$mysqli = openDB();
 			$r = new Restaurant;
 			
+			if ( $active )
+				$act = "AND r.status=1 ";
+			else
+				$act = "";
+			
 			$query = "SELECT r.id,r.name,r.address,r.phone_number,r.longitude,r.latitude,r.max_notice,
 						r.min_notice,r.reservation_time,COUNT(t.id) AS table_count,r.manager_id,r.status 
 					  FROM restaurants r LEFT JOIN tables t ON 
-					  	r.id = t.restaurant_id WHERE r.id=? AND r.manager_id=? GROUP BY r.id";
+					  	r.id = t.restaurant_id WHERE r.id=? AND r.manager_id=? $act GROUP BY r.id";
 						
 			$stmt = $mysqli->prepare($query);
 

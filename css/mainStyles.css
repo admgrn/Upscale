@@ -486,3 +486,23 @@ div.ui-datepicker{
 	text-align:left;
 	font-size:16px;	
 }
+
+.reservationSelector h2 {
+	font-size:14px;	
+}
+
+.reservationSelector h2 a {
+	text-decoration: underline;
+	color: #000;
+}
+
+.resTopLeft {
+	float:left;
+	width:600px;	
+}
+
+.resTopRight {
+	margin: 20px 0px 0px 15px;
+	float:left;
+	width:175px;	
+}
