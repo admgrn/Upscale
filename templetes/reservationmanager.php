@@ -42,7 +42,7 @@
                 	<?php 
 						if(!$reservations)
 						{
-							echo "<h3 class='center'>There are no reservations</h3>";	
+							echo "<h3 class='center'>There are no reservations here</h3>";	
 						}
 						else
 						{
@@ -59,7 +59,7 @@
 							
 							$start = $start & 1;
 						
-							$header = "\t<tr><th>#</th><th>time</th><th>name</th><th>phone #</th><th>email</th><th>table count</th><th>actions</th></tr>";
+							$header = "\t<tr><th>#</th><th>time</th><th>name</th><th>phone #</th><th>email</th><th>table count</th><th>tables</th><th>actions</th></tr>";
 							echo "<table class='tableList'>";
 							echo $header;
 							foreach($reservations as $r)
@@ -72,7 +72,23 @@
 								$u = Users::GetUserFromID($r->userID);
 								$time = date("g:i A l, F j, Y",strtotime("$r->date $r->startTime"));
 								
-								echo "\t<tr $class><td>$i</td><td>$time</td><td>$u->name</td><td>$u->phoneNumber</td><td>$u->email</td><td>$r->tableCount</td><td><a href='".ROOT_URL."/reservations/edit/$r->id' title='edit' class='mainButtonTable'>edit</a><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this reservation? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='delete' value='$r->id' /></form></td></tr>\n";
+								$tables = $r->GetTableList();
+								
+								$b = 0;
+								
+								foreach($tables as $t)
+								{
+									if ($b++ == 0)
+									{
+										$tList = $t->name;
+									}
+									else
+									{
+										$tList .= ", $t->name";	
+									}
+								}
+								
+								echo "\t<tr $class><td>$i</td><td>$time</td><td>$u->name</td><td>$u->phoneNumber</td><td>$u->email</td><td>$r->tableCount</td><td>$tList</td><td><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this reservation? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='delete' value='$r->id' /></form></td></tr>\n";
 								$i = $change($i);
 							}
 							echo "</table>";
