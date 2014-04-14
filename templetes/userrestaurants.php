@@ -40,7 +40,7 @@
 							else
 								$class = "";
 								
-							echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td style='width:305px;'><a href='".ROOT_URL."/restaurants/$r->id' title='view profile' class='mainButtonTable'>view profile</a><a href='".ROOT_URL."/reservations/$r->id' title='make reservation' class='mainButtonTable'>make reservation</a></td></tr>";
+							echo "\t<tr $class><td>$i</td><td>$r->name</td><td>$r->address</td><td>$r->tableCount</td><td style='width:305px;'><a href='".ROOT_URL."/restaurants?id=$r->id' title='view profile' class='mainButtonTable'>view profile</a><a href='".ROOT_URL."/reservations?id=$r->id' title='make reservation' class='mainButtonTable'>make reservation</a></td></tr>";
 							++$i;
 						}	
 						
@@ -97,7 +97,7 @@
             <div class='infoBox'>
             	<h1><?php echo $info->name;?></h1>
                 <div class='leftRest center'>
-                	<a href='<?php echo ROOT_URL . "/reservations/$info->id";?>' title='make reservation' class='mainButton'>make reservation</a>
+                	<a href='<?php echo ROOT_URL . "/reservations?id=$info->id";?>' title='make reservation' class='mainButton'>make reservation</a>
                     <div class='itemBox'>
                     	<h1>info</h1>
                         <table class='restdetails'>

@@ -48,7 +48,7 @@
 								   	   start: new Date($start), 
 									   end: new Date($end),
 									   allDay: false,
-									   url: '".ROOT_URL."/reservations/edit/$r->id'
+									   url: '".ROOT_URL."/reservations/edit?id=$r->id'
 									  }\n";		
 							}
 						}

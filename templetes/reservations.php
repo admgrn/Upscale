@@ -54,7 +54,7 @@
                 <table class='details'>
                     <tr>
                     	<td class='firstColDetails'>Restaurant: </td>
-                        <td class='firstColDetails'><a href='<?php echo ROOT_URL."/restaurants/".$info->id;?>' title='<?php echo $info->name;?>' class='boldLink'><?php echo $info->name;?></a></td>
+                        <td class='firstColDetails'><a href='<?php echo ROOT_URL."/restaurants?id=".$info->id;?>' title='<?php echo $info->name;?>' class='boldLink'><?php echo $info->name;?></a></td>
                      <tr>
                         <td class='firstColDetails'>Address: </td><td><?php echo $info->address;?></td>
                      </tr>
@@ -218,7 +218,7 @@
 										
                                     echo "<tr>
 									        <td><input type='radio' name='restChoose' value='$r->id' $p/></td>
-									        <td><a href='".ROOT_URL."/restaurants/$r->id' target='_blank' title='$r->name' class='boldLink'>$r->name</a><td></td>
+									        <td><a href='".ROOT_URL."/restaurants?id=$r->id' target='_blank' title='$r->name' class='boldLink'>$r->name</a><td></td>
 										  </tr>";
                                 }
                               ?>

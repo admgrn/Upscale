@@ -31,7 +31,7 @@
 					var l = locations[i];
 					
 					var contents = "<div style='font-weight:bold'>" + l[1] + "</div><div>" + l[2] + "</div><div>"
-									+ l[3] + "</div><div><a href='<?php echo ROOT_URL."/restaurants/";?>" + l[0] + "' title='"
+									+ l[3] + "</div><div><a href='<?php echo ROOT_URL."/restaurants/?id=";?>" + l[0] + "' title='"
 									+ l[1] + "'>go to restaurant</a>";
 					
 					var myLatLng = new google.maps.LatLng(l[5], l[4]);

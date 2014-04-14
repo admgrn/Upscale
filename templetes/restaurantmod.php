@@ -156,6 +156,7 @@
 		
         </script>
         <div id='mainContentsLogin'>
+            <form action='<?php echo THIS_PAGE;?>' method='post' class='center'>
         	<div class='layerEdit'>
                 <div id='restBox' class='infoBox'>
                     <?php 
@@ -187,7 +188,6 @@
                             $errors->GetError("resTimeFormat","\t<li>Reservation length invalid format</li>");
                             if ($errors->GetState()) echo "</ul>";
                     ?>
-                    <form action='<?php echo THIS_PAGE;?>' method='post' class='center'>
                         <input type='text' name='name' placeholder='name' class='inputField<?php $errors->GetError("nameNull"," borderError");?>' <?php echo $form->GetValue('name');?> />
                         <input type='text' name='address' placeholder='address' class='inputField<?php $errors->GetError(array("addressNull","addressDuplicate")," borderError");?>' onblur='GetLocation($(this).val())' <?php echo $form->GetValue('address');?> />
                         <input type='text' name='phoneNumber' placeholder='phone number' class='inputField<?php $errors->GetError(array("phoneNumberNull","phoneNumberFormat")," borderError");?>' <?php echo $form->GetValue('phoneNumber');?> />
@@ -319,13 +319,13 @@
 									
 									$closed = "Open";
 								}
-								echo "\t<tr $class><td>$i</td><td>$date</td><td>$open</td><td>$close</td><td>$closed</td><td><form action='".ROOT_URL."/editrestaurant/$page->id#special' method='post'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this table? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='deleteSP' value='$h->day' /></form></td></tr>\n";
+								echo "\t<tr $class><td>$i</td><td>$date</td><td>$open</td><td>$close</td><td>$closed</td><td><form action='".THIS_PAGE."#special' method='post'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this table? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='deleteSP' value='$h->day' /></form></td></tr>\n";
 								++$i;
 							}
 							
 							$formSP = new FormValues;
 					   ?>
-                       <form method='post' action='<?php echo ROOT_URL."/editrestaurant/$page->id";?>#special'>
+                       <form method='post' action='<?php echo THIS_PAGE;?>#special'>
                        <tr>
                        		<td><?php echo $i;?></td>
                             <td><input type='text' name='dateSP' id='dateSP' placeholder='date' /></td>
@@ -340,8 +340,9 @@
                             <td><label>no open time <input type='checkbox' name='isopenSP' value='1' /></label></td>
                             <td><label>no close time <input type='checkbox' name='isclosedSP' value='1' /></label></td>
                         </tr>
+                     	
                       </table>
-                	</form>
+                 </form>  
                     <script>
 						$(function() {
 						$( "#dateSP" ).datepicker();
