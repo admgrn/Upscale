@@ -21,10 +21,11 @@
 	{
 		$status = $_POST['loginUse'] == "manager" ? $session->NewManagerSession($_POST['loginUsername'],$_POST['loginPassword']) : 
 										  $session->NewUserSession($_POST['loginUsername'],$_POST['loginPassword']);
-		  
+		
 		// Redirect to main page if manager login
-		if ($status && $_SERVER['REQUEST_URI'] == strtolower("/managers"))
+		if ($status && $_POST['loginUse'] == "manager")
 		{
+			echo "hello";
 			header('Location: ' . ROOT_URL);
 			die();
 		}

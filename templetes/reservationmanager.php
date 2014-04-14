@@ -28,8 +28,8 @@
                    
                     <div class='reservationSelector'>
                         <h2>
-                            <a href='<?php echo ROOT_URL."/reservations/past/".$page->id;?>' title='past reservations'>past</a> | 
-                            <a href='<?php echo ROOT_URL."/reservations/".$page->id;?>' title='future reservations'>future</a>
+                            <a href='<?php echo ROOT_URL."/reservations/past?id=".$page->id;?>' title='past reservations'>past</a> | 
+                            <a href='<?php echo ROOT_URL."/reservations?id=".$page->id;?>' title='future reservations'>future</a>
                         </h2>
                     </div>
                 </div>

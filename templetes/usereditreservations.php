@@ -32,7 +32,7 @@
                 <table class='details'>
                     <tr>
                     	<td class='firstColDetails'>Restaurant: </td>
-                        <td class='firstColDetails'><a href='<?php echo ROOT_URL."/restaurants/".$restaurant->id;?>' title='<?php echo $restaurant->name;?>' class='boldLink'><?php echo $restaurant->name;?></a></td>
+                        <td class='firstColDetails'><a href='<?php echo ROOT_URL."/restaurants?id=".$restaurant->id;?>' title='<?php echo $restaurant->name;?>' class='boldLink'><?php echo $restaurant->name;?></a></td>
                      <tr>
                         <td class='firstColDetails'>Address: </td><td><?php echo $restaurant->address;?></td>
                      </tr>

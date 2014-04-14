@@ -73,27 +73,12 @@ class Router
 					$file = "/templetes/homepage.php";
 					break;
 				case "reservations":
-					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
-					{	
-						if (!($this->params[0] = Restaurant::GetRestaurantWithMID($URLArray[2],$_SESSION['id'],$active = TRUE)))
-						{
-							$this->params = FALSE;
-							$file = "/templetes/404.php";
-							break;
-						}
-						else
-						{
-							$this->params[1] = "future";
-						}
-						
-					}
-					elseif (isset($URLArray[2]) && $URLArray[2] == "past")
-					{
-						
-						if (isset($URLArray[3]) && is_numeric($URLArray[3]))
+					if (isset($URLArray[2]) && $URLArray[2] == "past")
+					{					
+						if (isset($_GET['id']) && is_numeric($_GET['id']))
 						{
 							
-							if (!($this->params[0] = Restaurant::GetRestaurantWithMID($URLArray[3],$_SESSION['id'],$active = TRUE)))
+							if (!($this->params[0] = Restaurant::GetRestaurantWithMID($_GET['id'],$_SESSION['id'],$active = TRUE)))
 							{
 								$this->params = FALSE;
 								$file = "/templetes/404.php";
@@ -104,6 +89,20 @@ class Router
 								$this->params[1] = "past";
 							}
 						}	
+					}
+					elseif (isset($_GET['id']) && is_numeric($_GET['id']))
+					{	
+						if (!($this->params[0] = Restaurant::GetRestaurantWithMID($_GET['id'],$_SESSION['id'],$active = TRUE)))
+						{
+							$this->params = FALSE;
+							$file = "/templetes/404.php";
+							break;
+						}
+						else
+						{
+							$this->params[1] = "future";
+						}
+						
 					}
 					else
 					{	
@@ -127,9 +126,9 @@ class Router
 					$file = "/templetes/restaurantmod.php";
 					break;
 				case "editrestaurant":
-					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					if (isset($_GET['id']) && is_numeric($_GET['id']))
 					{
-						$this->params = Restaurant::GetRestaurantWithMID($URLArray[2],$_SESSION['id']);
+						$this->params = Restaurant::GetRestaurantWithMID($_GET['id'],$_SESSION['id']);
 						if ($this->params)
 						{
 							$file = "/templetes/restaurantmod.php";
@@ -140,9 +139,9 @@ class Router
 					$file = "/templetes/404.php";
 					break;
 				case "edittables":
-					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					if (isset($_GET['id']) && is_numeric($_GET['id']))
 					{
-						$this->params = Restaurant::GetRestaurant($URLArray[2]);
+						$this->params = Restaurant::GetRestaurant($_GET['id']);
 						if ($this->params)
 						{
 							$file = "/templetes/managetables.php";
@@ -176,10 +175,10 @@ class Router
 				case "reservations":
 					if (isset($URLArray[2]) && $URLArray[2] == "edit")
 					{
-						if (isset($URLArray[3]) && is_numeric($URLArray[3]))
+						if (isset($_GET['id']) && is_numeric($_GET['id']))
 						{
 							$this->params[0] = "user";
-							$this->params[1] = Reservations::GetReservationFromRIDAndUID($URLArray[3],$_SESSION['id']);
+							$this->params[1] = Reservations::GetReservationFromRIDAndUID($_GET['id'],$_SESSION['id']);
 							if ($this->params[1])
 							{
 								$file = "/templetes/usereditreservations.php";
@@ -210,9 +209,9 @@ class Router
 				case "restaurants":
 					$this->params[0] = "user";
 					
-					if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+					if (isset($_GET['id']) && is_numeric($_GET['id']))
 					{
-						$this->params[1] = Restaurant::GetRestaurant($URLArray[2], $active = TRUE);	
+						$this->params[1] = Restaurant::GetRestaurant($_GET['id'], $active = TRUE);	
 					}
 					else
 					{
@@ -236,6 +235,7 @@ class Router
 	private function GetURLParts()
 	{
 		$URLList = explode('#',strtolower($this->url));
+		
 		return explode('/',$URLList[0]);
 	}
 }
