@@ -41,10 +41,11 @@ CREATE TABLE restaurants (
 CREATE TABLE reservations (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	restaurant_id INT NOT NULL,
-	user_id INT NOT NULL,
+	user_id INT NULL,
 	date DATE,
 	start_time TIME,
 	number_of_people INT,
+	name VARCHAR(100) NULL DEFAULT NULL,
 	FOREIGN KEY (restaurant_id)
 		REFERENCES restaurants(id)
 		ON DELETE CASCADE,

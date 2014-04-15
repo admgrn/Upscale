@@ -8,9 +8,10 @@
 		public $startTime;
 		public $numberOfPeople;	
 		public $tableCount;
+		public $name;
 		
 		public function __construct($id = NULL,$restaurantID = NULL,$userID = NULL,$date = NULL,$startTime = NULL,
-									  $numberOfPeople = NULL,$tableCount = NULL)
+									  $numberOfPeople = NULL,$tableCount = NULL,$name = NULL)
 		{
 			$this->id = $id;
 			$this->restaurantID = $restaurantID;
@@ -19,6 +20,7 @@
 			$this->startTime = $startTime;
 			$this->numberOfPeople = $numberOfPeople;
 			$this->tableCount = $tableCount;
+			$this->name = $name;
 		}
 		
 		public static function MakeReservation(Restaurant $r,$uid,&$date,&$time,&$numberOfPeople)
@@ -136,16 +138,16 @@
 			}
 			
 			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
-									  COUNT(tr.reservation_id) AS table_count
+									  COUNT(tr.reservation_id) AS table_count,r.name
 									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
 										r.id = tr.reservation_id
 									  JOIN restaurants res ON r.restaurant_id = res.id WHERE res.manager_id=? AND res.id=?
 									  AND UNIX_TIMESTAMP(TIMESTAMP(date,start_time)) $op $time - ?									  
-									  GROUP BY r.id ORDER BY r.start_time,r.date $ord");
+									  GROUP BY r.id ORDER BY r.date $ord,r.start_time $ord");
 										
 
 			$stmt->bind_param("iii",$mid,$rid,$t);
-			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount,$name);
 			
 			$stmt->execute();
 			
@@ -153,7 +155,7 @@
 			
 			while($stmt->fetch())
 			{
-				$reservation = new Reservations($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
+				$reservation = new Reservations($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount,$name);
 				array_push($list,$reservation);
 			}
 			

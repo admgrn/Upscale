@@ -59,7 +59,7 @@
 							
 							$start = $start & 1;
 						
-							$header = "\t<tr><th>#</th><th>time</th><th>name</th><th>phone #</th><th>email</th><th>table count</th><th>tables</th><th>actions</th></tr>";
+							$header = "\t<tr><th>#</th><th>time</th><th>name</th><th>phone #</th><th>email</th><th># of people</th><th>table count</th><th>tables</th><th>actions</th></tr>";
 							echo "<table class='tableList'>";
 							echo $header;
 							foreach($reservations as $r)
@@ -69,26 +69,33 @@
 								else
 									$class = "";
 								
-								$u = Users::GetUserFromID($r->userID);
-								$time = date("g:i A l, F j, Y",strtotime("$r->date $r->startTime"));
-								
-								$tables = $r->GetTableList();
-								
-								$b = 0;
-								
-								foreach($tables as $t)
+								if ($r->userID != NULL)
 								{
-									if ($b++ == 0)
-									{
-										$tList = $t->name;
-									}
-									else
-									{
-										$tList .= ", $t->name";	
-									}
+									$u = Users::GetUserFromID($r->userID);
 								}
+								else
+								{
+									$u = new Users(NULL,"<strong>".$r->name."</strong>",'-','-','-','-');
+								}
+									$time = date("g:i A l, F j, Y",strtotime("$r->date $r->startTime"));
+									
+									$tables = $r->GetTableList();
+									
+									$b = 0;
+									
+									foreach($tables as $t)
+									{
+										if ($b++ == 0)
+										{
+											$tList = $t->name;
+										}
+										else
+										{
+											$tList .= ", $t->name";	
+										}
+									}
 								
-								echo "\t<tr $class><td>$i</td><td>$time</td><td>$u->name</td><td>$u->phoneNumber</td><td>$u->email</td><td>$r->tableCount</td><td>$tList</td><td><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this reservation? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='delete' value='$r->id' /></form></td></tr>\n";
+								echo "\t<tr $class><td>$i</td><td>$time</td><td>$u->name</td><td>$u->phoneNumber</td><td>$u->email</td><td>$r->numberOfPeople</td><td>$r->tableCount</td><td>$tList</td><td><form action='".THIS_PAGE."' method='post' style='display:inline'><input type='submit' value='delete' onclick=\"if(confirm('Are you sure you want to delete this reservation? This cannot be undone.')) return true; else return false;\" class='mainButtonTable' /><input type='hidden' name='delete' value='$r->id' /></form></td></tr>\n";
 								$i = $change($i);
 							}
 							echo "</table>";
