@@ -151,6 +151,10 @@ class Router
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";
 					break;
+				case "compare":
+					$this->params = "manager";
+					$file = "/templetes/compare.php";
+					break;
 				default:
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";

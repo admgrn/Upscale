@@ -606,5 +606,44 @@
 			
 			$stmt->execute();
 		}
+		
+		public static function GetTopRestaurants()
+		{
+			$mysqli = openDB();
+			
+			$time = time();
+			
+			$query = "SELECT res.id,res.name,res.address,res.phone_number,res.longitude,res.latitude,res.max_notice,
+						res.min_notice,res.reservation_time,res.manager_id,res.status,
+						COUNT(res.id) as reservation_count  
+					FROM reservations r 
+						JOIN restaurants res ON r.restaurant_id = res.id
+						JOIN tables_in_reservation t ON r.id = t.reservation_id
+						WHERE res.status=1 AND UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) >= $time GROUP BY res.id ORDER BY
+					COUNT(res.id) DESC LIMIT 0,20";
+						
+			$stmt = $mysqli->prepare($query);	
+			$stmt->bind_result($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+					   $minNotice,$reservationLength,$managerID,$status,$reservationCount);
+			
+			$stmt->execute();
+			$list = array();
+			
+			while($stmt->fetch())
+			{
+					array_push($list,array(new Restaurant($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,
+								   $minNotice,$reservationLength,NULL,$managerID,$status),$reservationCount));	
+			}
+			
+			if ($list == array())
+			{
+				return FALSE;
+			}
+			else
+			{
+				return $list;
+			}
+			
+		}
 	}
 ?>
