@@ -155,6 +155,21 @@ class Router
 					$this->params = "manager";
 					$file = "/templetes/compare.php";
 					break;
+				case "createreservation":
+					if (isset($_GET['id']) && is_numeric($_GET['id']))
+					{
+						$this->params[0] = "manager";
+						$this->params[1] = Restaurant::GetRestaurantWithMID($_GET['id'],$_SESSION['id'],$active = TRUE);
+						
+						if ($this->params[1])
+						{
+							$file = "/templetes/reservations.php";
+							break;
+						}
+					}
+					$this->notFound = TRUE;
+					$file = "/templetes/404.php";
+					break;
 				default:
 					$this->notFound = TRUE;
 					$file = "/templetes/404.php";
@@ -243,3 +258,4 @@ class Router
 		return explode('/',$URLList[0]);
 	}
 }
+?>

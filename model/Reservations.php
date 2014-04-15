@@ -79,13 +79,29 @@
 			
 		}
 		
-		public static function ManagerMakeReservation(Restaurant $r,$mid,$name,&$date,&$time,&$numberOfPeople)
-		{			
+		public static function ManagerMakeReservation(Restaurant $r,$mid,&$name,&$date,&$time,&$numberOfPeople)
+		{	
+			$status = TRUE;		
+			
 			if (!self::Validate($date,$time,$numberOfPeople))
+				$status = FALSE;
+				
+			$name = trim($name);
+			
+			if ($name == "")
+			{
+				Errors::Create("resCreate")->SetError("nameSet");
+				return FALSE;	
+			}
+			
+			if ($status == FALSE)
 				return FALSE;
 				
 			if ($r->managerID != $mid)
+			{
+				Errors::Create("resCreate")->SetError("generalError");
 				return FALSE;
+			}
 				
 			if(!self::GetBounds($r,$date,$time))	
 			{
@@ -108,7 +124,7 @@
 			$stmt = $mysqli->prepare("INSERT INTO reservations (restaurant_id,user_id,date,start_time,number_of_people,name) 
 												  VALUES(?,NULL,?,?,?,?)");
 			
-			$stmt->bind_param("issi",$r->id,$date,$time,$numberOfPeople,$name);
+			$stmt->bind_param("issis",$r->id,$date,$time,$numberOfPeople,$name);
 			
 			if(!$stmt->execute())
 			{

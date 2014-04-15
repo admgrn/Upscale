@@ -30,7 +30,19 @@
 	{
 		if (isset($_POST['time']))
 		{
-			$reservation = Reservations::MakeReservation($info,$_SESSION['id'],$_POST['date'],$_POST['time'],$_POST['people']);
+			if ($page == "manager")
+			{
+				$reservation = Reservations::ManagerMakeReservation($info,$_SESSION['id'],$_POST['name'],$_POST['date'],$_POST['time'],$_POST['people']);
+				if ($reservation)
+				{
+					header("Location: ".ROOT_URL."/reservations?id=$info->id");
+					die();
+				}
+			}
+			else
+			{
+				$reservation = Reservations::MakeReservation($info,$_SESSION['id'],$_POST['date'],$_POST['time'],$_POST['people']);
+			}
 			
 			if ($reservation)
 				$tableList = $reservation->GetTableList();
@@ -101,6 +113,9 @@
         <?php } elseif ($info) { ?>
         	<div id='layerEdit'>
             	<div class='infoBox'>
+                <?php if ($page == "manager") { ?>
+                	<div class='topButton'><a href='<?php echo ROOT_URL."/reservations?id=$info->id";?>' title='back' class='mainButton'>< back</a></div>
+                <?php } ?>
                 	<div class='leftMakeRes' style='text-align:center'>
                         <h3>Make Reservation - <?php echo $info->name;?></h3>
                        	<?php 
@@ -114,12 +129,19 @@
 							$error->GetError("dateSet","\t<li>Please enter a valid date.</li>\n");
 							$error->GetError("timeSet","\t<li>Please enter a valid time.</li>\n");
 							$error->GetError("peopleSet","\t<li>Please enter the number of people.</li>\n");
+							$error->GetError("nameSet","\t<li>Please enter a name for the reservation.</li>\n");
 							$error->GetError("futureCheck","\t<li>Please enter a time and date that is in the future.</li>\n");
 							if ($error->GetState()) echo "</ul>";
 						?>
                         <form action='<?php echo THIS_PAGE;?>' method='post'>
                             <input type='text' name='date' id='date' <?php echo $form->GetValue('date');?> placeholder='date' class='inputField' />
                             <input type='text' name='people' <?php echo $form->GetValue('people');?> placeholder='number in party' class='inputField' />
+                            <?php 
+								if ($page == "manager")
+								{
+									echo "<input type='text' name='name' id='date'".$form->GetValue('name')."placeholder='name' class='inputField' />";
+								}
+							?>
                             <div class='spacing'><?php $form->TimeSelection("time"); ?></div>
                             <input type='submit' value='Reserve' class='mainButton' />
                         </form>

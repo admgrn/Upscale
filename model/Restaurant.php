@@ -615,12 +615,11 @@
 			
 			$query = "SELECT res.id,res.name,res.address,res.phone_number,res.longitude,res.latitude,res.max_notice,
 						res.min_notice,res.reservation_time,res.manager_id,res.status,
-						COUNT(res.id) as reservation_count  
+						COUNT(r.restaurant_id) as reservation_count  
 					FROM reservations r 
 						JOIN restaurants res ON r.restaurant_id = res.id
-						JOIN tables_in_reservation t ON r.id = t.reservation_id
 						WHERE res.status=1 AND UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) >= $time GROUP BY res.id ORDER BY
-					COUNT(res.id) DESC LIMIT 0,20";
+					COUNT(r.restaurant_id) DESC LIMIT 0,20";
 						
 			$stmt = $mysqli->prepare($query);	
 			$stmt->bind_result($id_f,$name,$address,$phoneNumber,$longitude,$latitude,$maxNotice,

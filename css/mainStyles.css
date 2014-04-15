@@ -506,3 +506,8 @@ div.ui-datepicker{
 	float:left;
 	width:175px;	
 }
+
+.topButton {
+	margin:20px 0px 0px 20px;
+	display:block;	
+}
