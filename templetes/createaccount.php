@@ -1,38 +1,37 @@
 <?php
 	$router = Router::Load();
 	$page = $router->params;
-	
+
 	if (isset($_POST['createUse']))
 	{
 		$session = new Session;
 		$status = FALSE;
-		
+
 		if ($_POST['createUse'] == 'user')
 			$status = $session->CreateUser($_POST['loginName'],$_POST['loginUsername'],$_POST['loginPassword'],$_POST['loginEmail'],$_POST['loginPhoneNumber']);
 		else
 		{
 			$status = $session->CreateManager($_POST['loginName'],$_POST['loginUsername'],$_POST['loginPassword'],$_POST['loginEmail']);
 		}
-			
+
 		if ($status) header('Location: ' . ROOT_URL);
 	}
-	
+
 	$errors = Errors::Create("create");
 	$form = new FormValues;
 	$title = "Upscale™ -"; if ($page == "manager") $title .= " Manager"; $title .= " Create Account";
-	
+
 	include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/loginHeader.php");
-	
-?>  
+?>
         <div id='mainContentsLogin'>
        		<?php
 				if ($page == "user")
 					echo "<h2 class='textCenter'>Create User Account</h2>";
 				else
 					echo "<h2 class='textCenter'>Create Manager Account</h2>";
-			?>  
+			?>
             <div id='createBox'>
-            	<?php 
+            	<?php
 					if ($errors->GetState()) echo "<ul class='loginErrorList'>";
 					$errors->GetError("general","\t<li>An Error Occured, please try again</li>");
 					$errors->GetError("username","\t<li>Username Already Exists</li>");
@@ -47,7 +46,7 @@
 					$errors->GetError("phoneNumberNull","\t<li>Phone Number cannot be empty</li>");
 					if ($errors->GetState()) echo "</ul>";
 				?>
-				
+
                 <form id='loginForm' method='post' action='<?php echo THIS_PAGE;?>'>
                 	<input type='text' placeholder='name' class='inputField<?php $errors->GetError("nameNull"," borderError");?>' name='loginName' <?php echo $form->GetValue('loginName');?> />
 					<input type='text' placeholder='username' class='inputField<?php $errors->GetError("userNameNull"," borderError");?>' name='loginUsername' <?php echo $form->GetValue('loginUsername');?> />

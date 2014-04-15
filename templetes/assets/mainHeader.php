@@ -40,7 +40,6 @@
                     	<a href='<?php echo ROOT_URL;?>' class='mainButtonWhite' title='home'>home</a><?php 
 							if ($page == "user")
 							{
-								
 								echo "<a href='". ROOT_URL . "/reservations' class='mainButtonWhite' title='find reservations'>find reservations</a>";
 								echo "<a href='". ROOT_URL . "/myreservations' class='mainButtonWhite' title='my reservations'>my reservations</a>";
 								echo "<a href='". ROOT_URL . "/map' class='mainButtonWhite' title='restaurant map'>restaurant map</a>";

@@ -13,14 +13,14 @@
             <div id='headerLoginTop'>
             	<div id='headerLoginTopRight'>
                 	<?php
-						if ($page == "user")
-							echo "<a href='" . ROOT_URL . "/managers' class='mainButton' title='for managers'>for managers</a>";
-						else
-							echo "<a href='" . ROOT_URL . "' class='mainButton' title='for reservations'>for reservations</a>";
-					?>                	
+				if ($page == "user")
+					echo "<a href='" . ROOT_URL . "/managers' class='mainButton' title='for managers'>for managers</a>";
+				else
+					echo "<a href='" . ROOT_URL . "' class='mainButton' title='for reservations'>for reservations</a>";
+			?>
                 </div>
             </div>
             <div id='headerLoginBottom'>
             <img src='<?php echo ROOT_URL;?>/img/logo.png' alt='UPSCALE™' />
             </div>
-        </div>     
+        </div>
