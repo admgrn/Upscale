@@ -35,7 +35,7 @@
                 </div>
                 <div class='resTopRight'>
                 	<?php if ($router->params[1] == "future") { ?>
-                		<a href='#' title='+ add reservation' class='mainButton'>+ add reservation</a>
+                		<a href='<?php echo ROOT_URL."/createreservation?id=$page->id";?>' title='+ add reservation' class='mainButton'>+ add reservation</a>
                     <?php } ?>						
                 </div>
                 <div class='layerEdit'>

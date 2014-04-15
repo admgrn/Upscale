@@ -79,6 +79,72 @@
 			
 		}
 		
+		public static function ManagerMakeReservation(Restaurant $r,$mid,$name,&$date,&$time,&$numberOfPeople)
+		{			
+			if (!self::Validate($date,$time,$numberOfPeople))
+				return FALSE;
+				
+			if ($r->managerID != $mid)
+				return FALSE;
+				
+			if(!self::GetBounds($r,$date,$time))	
+			{
+				Errors::Create("resCreate")->SetError("boundError");
+				return FALSE;	
+			}
+			
+			$foundTables = self::GetTables($r,$date,$time,$numberOfPeople);
+		
+			
+			if (!$foundTables)
+			{
+				return FALSE;	
+			}
+			
+			$mysqli = openDB();
+			
+			$mysqli->begin_transaction();
+			
+			$stmt = $mysqli->prepare("INSERT INTO reservations (restaurant_id,user_id,date,start_time,number_of_people,name) 
+												  VALUES(?,NULL,?,?,?,?)");
+			
+			$stmt->bind_param("issi",$r->id,$date,$time,$numberOfPeople,$name);
+			
+			if(!$stmt->execute())
+			{
+				Errors::Create("resCreate")->SetError("generalError");
+				$mysqli->rollback();
+				return FALSE;
+			}
+			
+			
+			$insertID = $stmt->insert_id;
+			
+			$stmt->close();
+			
+			$stmt = $mysqli->prepare("INSERT INTO tables_in_reservation (reservation_id,table_id) VALUES(?,?)");
+			
+			$stmt->bind_param("ii",$insertID,$tid);
+			
+			foreach($foundTables as $found)
+			{
+				$tid = $found->id;
+				
+				if(!$stmt->execute())
+				{
+					Errors::Create("resCreate")->SetError("generalError");
+					$mysqli->rollback();
+					return FALSE;					
+				}
+			}
+		
+			$mysqli->commit();
+			
+			// Return Reservation Object	
+			return self::GetReservationFromReservationID($insertID);
+			
+		}
+		
 		public static function GetAllUserReservations($id)
 		{
 			$mysqli = openDB();
