@@ -214,9 +214,9 @@ class Router
 						$this->params[0] = "user";
 						$this->params[1] = FALSE;	
 										
-						if (isset($URLArray[2]) && is_numeric($URLArray[2]))
+						if (isset($_GET['id']) && is_numeric($_GET['id']))
 						{
-							$this->params[1] = Restaurant::GetRestaurant($URLArray[2], $active = TRUE);
+							$this->params[1] = Restaurant::GetRestaurant($_GET['id'], $active = TRUE);
 						}
 						$file = "/templetes/reservations.php";
 					}
