@@ -161,14 +161,23 @@
 			
 		}
 		
-		public static function GetAllUserReservations($id)
+		public static function GetAllUserReservations($id,$count = NULL)
 		{
 			$mysqli = openDB();
 			
-			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,r.number_of_people,
-									  COUNT(tr.reservation_id) AS table_count
+			if ($count != NULL)
+			{
+				$limit = " LIMIT $count";		
+			}
+			else
+			{
+				$limit = "";
+			}
+
+			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,
+									r.number_of_people,COUNT(tr.reservation_id) AS table_count
 									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
-										r.id = tr.reservation_id WHERE r.user_id=? GROUP BY r.id");
+										r.id = tr.reservation_id WHERE r.user_id=? GROUP BY r.id ORDER BY r.date,r.start_time ASC$limit");
 										
 			$stmt->bind_param("i",$id);
 			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
@@ -423,19 +432,27 @@
 			}			
 		}
 		
-		public static function GetTables(Restaurant $r,$date,$time,$numberOfPeople)
+		public static function GetTables(Restaurant $r,$date,$time,$numberOfPeople,$manger = FALSE)
 		{
 			date_default_timezone_set('America/New_York');
 			$reservationLengthSec = $r->reservationLength * 60;
 			$reservationTimeUnix = strtotime($date . " " . $time);	
+			
+			if ($manager)
+			{
+				$reserve = "";
+			}
+			else
+			{
+				$reserve = "reserve_online=1 AND ";
+			}
 						
 			$query = "SELECT ta.id,ta.name,ta.capacity,ta.can_combine,ta.description,ta.reserve_online,ta.restaurant_id 
 						FROM tables ta WHERE ta.id 
 							NOT IN (SELECT t.id FROM reservations r 	
 								JOIN tables_in_reservation tr ON r.id = tr.reservation_id 
 								JOIN tables t ON tr.table_id = t.id 
-				 			   WHERE reserve_online=1 
-				  				AND (((UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) + ?) >= ?) AND ((? + ?) >=
+				 			   WHERE $reserve(((UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) + ?) >= ?) AND ((? + ?) >=
 									UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time))))) 
 					AND ta.restaurant_id=?
 				 	 ORDER BY ta.capacity DESC";
