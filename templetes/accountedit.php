@@ -2,10 +2,9 @@
 	$router = Router::Load();
 	$page = $router->params;
 	$errors = Errors::Create("edit");
-	
+
 	if (isset($_POST['updateUse']))
 	{
-		
 		$session = new Session;
 		$status = ($page == "user" ? $session->UpdateUser($_SESSION['id'],$_POST['name'],$_POST['email'],$_POST['phoneNumber'],$_POST['oldPassword'],$_POST['newPassword']) :
 						  		     $session->UpdateManager($_SESSION['id'],$_POST['name'],$_POST['email'],$_POST['oldPassword'],$_POST['newPassword']));

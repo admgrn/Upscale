@@ -35,8 +35,15 @@
             </div>
        		<div class='infoBox about'>
             	<h1>About UPSCALE™</h1>
-            	<p>This is some information about UPSCALE™. It is some very informational information that will explain a lot about the website. It will be very interesting and informative.</p>
-                <p> This is the second paragraph and it will also be very informative.</p>
+                <?php if ($page == "user") { ?>
+            	<p>Welcome to Upscale, a brand new easy to use reservation finder. Not sure what you want to have for dinner?</p>
+                <p>Our tools make make it easy to find available resevations in the Tallahassee area.</p>
+                <p>Login to begin using UPSCALE™</p>
+                <?php }else{  ?>
+                <p>Welcome to Upscale, a brand new easy to use reservation finder. UPSCALE™ helps restauants connect with clients through easy to use tools.</p>
+                <p>Upscale allows restaurants to create a profile online which will makes your restaurant more asscessable.</p>
+                <p>Login to begin using UPSCALE™</p>
+                <?php } ?>                
             </div>
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/loginFooter.php"); ?>

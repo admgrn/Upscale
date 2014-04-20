@@ -63,7 +63,7 @@
 				{
 					if (self::CheckCreate($name,$userName,$email,$phoneNumber,$managerOrUser,$errorName,FALSE))
 					{
-						$stmt = $mysqli->prepare("SELECT * FROM users WHERE id=? AND name=? AND email=?");
+						$stmt = $mysqli->prepare("SELECT * FROM managers WHERE id=? AND name=? AND email=?");
 						$stmt->bind_param("iss",$id,$name,$email);
 						
 						if ($stmt->execute() && $stmt->store_result() && $stmt->num_rows)
@@ -72,7 +72,7 @@
 						}
 						
 						$stmt->close();					
-						$stmt = $mysqli->prepare("UPDATE users SET name=?,email=? WHERE id=?");
+						$stmt = $mysqli->prepare("UPDATE managers SET name=?,email=? WHERE id=?");
 						$stmt->bind_param("ssi",$name,$email,$id);
 					}
 					else

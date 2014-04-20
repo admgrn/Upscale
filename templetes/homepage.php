@@ -9,8 +9,14 @@
 ?>
         <div id='mainContentsLogin'>
         	<div class='infoBox info'>
-            	<h1>Welcome to Upscale</h1>
-                <p>Here you will find some information</p>
+            	<h1>Welcome to UPSCALE™</h1>
+                <?php if ($page == "user") { ?>
+                <p>Welcome to Upscale, a brand new easy to use reservation finder. Not sure what you want to have for dinner?</p>
+                <p>Our tools make make it easy to find available resevations in the Tallahassee area.</p>
+                <?php }else{  ?>
+                <p>Welcome to Upscale, a brand new easy to use reservation finder. UPSCALE™ helps restauants connect with clients through easy to use tools.</p>
+                <p>Upscale allows restaurants to create a profile online which will makes your restaurant more asscessable.</p>
+                <?php } ?>
             </div>
        		<div class='infoBox info'>
             	<h1><?php $page == "user" ? print "User" : print "Manager";?> Info</h1>
