@@ -72,7 +72,7 @@
             </div>
        		<div class='infoBox about'>
             	<h1>Create an UPSCALE™ Account</h1>
-            	<p>It's Easy! Just plug in your information and begin searching for reservations.</p>
+            	<p>It's Easy! Just plug in your information <?php $page == "user" ? print "and begin searching for reservations": print "to begin managing your restaurant";?>.</p>
             </div>
         </div>
 <?php include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/loginFooter.php"); ?>
