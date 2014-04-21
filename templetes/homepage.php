@@ -4,7 +4,7 @@
   $title = "Upscale™ -"; if ($page == "manager") $title .= " Manager"; $title .= " Home";
   include_once($_SERVER['DOCUMENT_ROOT'] . "/templetes/assets/mainHeader.php");
   if ($page == "user")
-  	$reservations = Reservations::GetAllUserReservations($_SESSION['id'],5);
+  	$reservations = Reservations::GetAllUserReservations($_SESSION['id'],5,$date = TRUE);
   
 ?>
         <div id='mainContentsLogin'>

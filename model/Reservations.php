@@ -161,7 +161,7 @@
 			
 		}
 		
-		public static function GetAllUserReservations($id,$count = NULL)
+		public static function GetAllUserReservations($id,$count = NULL,$date = FALSE)
 		{
 			$mysqli = openDB();
 			
@@ -173,11 +173,21 @@
 			{
 				$limit = "";
 			}
+			
+			if ($date)
+			{
+				$curr = time();
+				$time = "AND UNIX_TIMESTAMP(TIMESTAMP(r.date,r.start_time)) > $curr ";
+			}
+			else
+			{
+				$time = "";	
+			}
 
 			$stmt = $mysqli->prepare("SELECT r.id,r.restaurant_id,r.user_id,r.date,r.start_time,
 									r.number_of_people,COUNT(tr.reservation_id) AS table_count
 									  FROM reservations r LEFT JOIN tables_in_reservation tr ON 
-										r.id = tr.reservation_id WHERE r.user_id=? GROUP BY r.id ORDER BY r.date,r.start_time ASC$limit");
+										r.id = tr.reservation_id WHERE r.user_id=? {$time}	GROUP BY r.id ORDER BY r.date,r.start_time ASC$limit");
 										
 			$stmt->bind_param("i",$id);
 			$stmt->bind_result($id,$rid,$uid,$date,$startTime,$numberOfPeople,$tableCount);
